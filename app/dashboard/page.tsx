@@ -1,10 +1,8 @@
+"use client"
+import { useAuth } from '@/context/authContext';
 import { redirect } from 'next/navigation';
 
-export default async function Dashboard() {
-const userId=null;
-  if (!userId) {
-    return redirect('/auth/sign-in');
-  } else {
-    redirect('/dashboard/overview');
-  }
+export default function Dashboard() {
+  const {isAuthenticated}=useAuth()
+   isAuthenticated? redirect('/dashboard/overview'):redirect('/auth/sign-in')
 }

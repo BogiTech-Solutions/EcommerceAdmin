@@ -1,3 +1,4 @@
+"use client"
 import PageContainer from '@/components/layout/page-container';
 import { Badge } from '@/components/ui/badge';
 import {
@@ -8,7 +9,9 @@ import {
   CardAction,
   CardFooter
 } from '@/components/ui/card';
+import { useAuth } from '@/context/authContext';
 import { IconTrendingDown, IconTrendingUp } from '@tabler/icons-react';
+import { redirect } from 'next/navigation';
 import React from 'react';
 
 export default function OverViewLayout({
@@ -22,6 +25,9 @@ export default function OverViewLayout({
   bar_stats: React.ReactNode;
   area_stats: React.ReactNode;
 }) {
+  const {isAuthenticated}=useAuth();
+  console.log("USER",isAuthenticated)
+  if(!isAuthenticated) redirect("/auth/sign-in")
   return (
     <PageContainer>
       <div className='flex flex-1 flex-col space-y-2'>

@@ -9,6 +9,7 @@ import NextTopLoader from 'nextjs-toploader';
 import { NuqsAdapter } from 'nuqs/adapters/next/app';
 import './globals.css';
 import './theme.css';
+import AuthContextProvider from '@/context/authContext';
 
 const META_THEME_COLORS = {
   light: '#ffffff',
@@ -55,7 +56,8 @@ export default async function RootLayout({
           isScaled ? 'theme-scaled' : '',
           fontVariables
         )}
-      >
+      ><AuthContextProvider>
+
         <NextTopLoader color='var(--primary)' showSpinner={false} />
         <NuqsAdapter>
           <ThemeProvider
@@ -71,6 +73,7 @@ export default async function RootLayout({
             </Providers>
           </ThemeProvider>
         </NuqsAdapter>
+      </AuthContextProvider>
       </body>
     </html>
   );

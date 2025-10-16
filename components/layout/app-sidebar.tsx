@@ -41,11 +41,11 @@ import {
   IconUserCircle
 } from '@tabler/icons-react';
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
+import { redirect, usePathname, useRouter } from 'next/navigation';
 import * as React from 'react';
 import { Icons } from '../icons';
 import { OrgSwitcher } from '../org-switcher';
-import { useAuth } from '@/hooks/use-auth-context';
+import { useAuth } from '@/context/authContext';
 export const company = {
   name: 'Acme Inc',
   logo: IconPhotoUp,
@@ -59,7 +59,7 @@ const tenants = [
 ];
 
 export default function AppSidebar() {
-  const {user}=useAuth();
+  const {user,logout,isAuthenticated}=useAuth();
   const pathname = usePathname();
   const { isOpen } = useMediaQuery();
   const router = useRouter();
@@ -73,6 +73,7 @@ export default function AppSidebar() {
     // Side effects based on sidebar state changes
   }, [isOpen]);
 
+!isAuthenticated && redirect("/auth/sign-in")
   return (
     <Sidebar collapsible='icon'>
       <SidebarHeader>
@@ -198,7 +199,7 @@ export default function AppSidebar() {
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem>
-                  <IconLogout className='mr-2 h-4 w-4' />
+                  <IconLogout onClick={logout} className='mr-2 h-4 w-4' />
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

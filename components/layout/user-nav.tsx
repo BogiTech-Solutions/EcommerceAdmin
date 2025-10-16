@@ -10,7 +10,7 @@ import {
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu';
 import { UserAvatarProfile } from '@/components/user-avatar-profile';
-import { useAuth } from '@/hooks/use-auth-context';
+import { useAuth } from '@/context/authContext';
 import { useRouter } from 'next/navigation';
 export function UserNav() {
   const { user,logout} = useAuth();
