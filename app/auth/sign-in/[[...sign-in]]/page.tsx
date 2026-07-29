@@ -60,7 +60,7 @@ export default function Page({ className, searchParams, ...props }: PageProps) {
           <div className="bg-primary text-primary-foreground flex size-6 items-center justify-center rounded-md">
             <GalleryVerticalEnd className="size-4" />
           </div>
-          Acme Inc.
+          ECommerce Admin.
         </a>
         <div className={cn("flex flex-col gap-6", className)} {...props}>
           <Card>

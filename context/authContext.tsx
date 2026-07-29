@@ -59,7 +59,7 @@ function AuthContextProvider({ children }: { children: ReactNode }) {
   // Login function
   const login = async (email: string, password: string) => {
     try {
-      const res = await fetch('https://api.merispare.com/api/v1/admin/login', {
+      const res = await fetch('http://localhost:8080/api/v1/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email:email, password:password,device_name:"Windows 10" }),
@@ -81,7 +81,7 @@ function AuthContextProvider({ children }: { children: ReactNode }) {
   // Register function
   const register = async (email: string, password: string, name?: string) => {
     try {
-      const res = await fetch('/api/auth/register', {
+      const res = await fetch('http://localhost:8080/api/v1/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password, name }),
