@@ -2,15 +2,15 @@
   "name": "my-project",
   "version": "0.1.0",
   "private": true,
- "scripts": {
-  "dev": "next dev --turbopack",
-  "build": "next build --turbopack",
-  "start": "next start",
-  "lint": "next lint",
-  "lint:fix": "next lint --fix",
-  "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,css,md}\"",
-  "format:check": "prettier --check \"**/*.{js,jsx,ts,tsx,json,css,md}\""
-},
+  "scripts": {
+    "dev": "next dev --turbopack",
+    "build": "next build --turbopack",
+    "start": "next start",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,css,md}\"",
+    "format:check": "prettier --check \"**/*.{js,jsx,ts,tsx,json,css,md}\""
+  },
   "dependencies": {
     "@base-ui/react": "^1.5.0",
     "@dnd-kit/core": "latest",
@@ -59,6 +59,9 @@
     "@types/node": "^24",
     "@types/react": "19.2.14",
     "@types/react-dom": "19.2.3",
+    "eslint": "^9.20.0",
+    "eslint-config-next": "^16.2.12",
+    "eslint-config-prettier": "^10.1.8",
     "postcss": "^8.5",
     "tailwindcss": "^4.3.3",
     "typescript": "5.7.3"
