@@ -40,7 +40,7 @@ export function OrgSwitcher({
                 <GalleryVerticalEnd className='size-4' />
               </div>
               <div className='flex flex-col gap-0.5 leading-none'>
-                <span className='font-bold'>Meri Spare Parts</span>
+                <span className='font-bold'>Ecommerce Admin</span>
               </div>
               <ChevronsUpDown className='ml-auto' />
             </SidebarMenuButton>
