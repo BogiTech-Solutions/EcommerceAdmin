@@ -13,7 +13,7 @@ import { GalleryVerticalEnd } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/context/authContext";
 import { useForm } from "react-hook-form";
-import { redirect, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 // Define form data type
@@ -39,9 +39,11 @@ export default function Page({ className, searchParams, ...props }: PageProps) {
   });
 
   const handleLogin = async (data: LoginFormData) => {
+   
     try {
       setError("");
-      await login(data.email, data.password);
+      const rrr=await login(data.email, data.password);
+      console.log(rrr,user,{email:data.email, pwd:data.password},"RRRRRRRRRRRRRRRRR")
       !!user && router.push("/dashboard");
     } catch (err: any) {
       setError(err.message || "Login failed");

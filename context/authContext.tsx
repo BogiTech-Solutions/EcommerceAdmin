@@ -59,6 +59,7 @@ function AuthContextProvider({ children }: { children: ReactNode }) {
 
   // Login function
   const login = async (email: string, password: string) => {
+    console.log("NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNnn")
     try {
       const res = await fetch(`${API_BASE_URL}/auth/login`, {
         method: 'POST',
