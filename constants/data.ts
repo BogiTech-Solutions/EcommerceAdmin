@@ -28,90 +28,18 @@ export const navItems: NavItem[] = [
     shortcut: ['p', 'p'],
     isActive: false,
     items: [] // No child items
-  },
-  {
-    title: 'Account',
-    url: '#', // Placeholder as there is no direct link for the parent
-    icon: 'billing',
-    isActive: true,
-
-    items: [
-      {
-        title: 'Profile',
-        url: '/dashboard/profile',
-        icon: 'userPen',
-        shortcut: ['m', 'm']
-      },
-      {
-        title: 'Login',
-        shortcut: ['l', 'l'],
-        url: '/',
-        icon: 'login'
-      }
-    ]
-  },
-     {
-    title: 'Packages',
-    url: '/dashboard/packages',
-    icon: 'kanban',
-    shortcut: ['k', 'k'],
+  },  
+   {
+    title: 'Users',
+    url: '/dashboard/users',
+    icon: 'user',
+    shortcut: ['u', 'u'],
     isActive: false,
     items: [] // No child items
-  },
-     {
-    title: 'Spares',
-    url: '/dashboard/spares',
-    icon: 'kanban',
-    shortcut: ['k', 'k'],
-    isActive: false,
-        items: [
-      {
-        title: 'Availability',
-        url: '/dashboard/availability',
-        icon: 'userPen',
-        shortcut: ['m', 'm']
-      },
-      {
-        title: 'Conditions',
-        shortcut: ['l', 'l'],
-        url: '/conditions',
-        icon: 'login'
-      },
-      {
-        title: 'Parts',
-        shortcut: ['l', 'l'],
-        url: '/parts',
-        icon: 'login'
-      }
-    ]
-  },
-  {
-    title: 'Payments',
-    url: '/dashboard/payments',
-    icon: 'kanban',
-    shortcut: ['k', 'k'],
-    isActive: false,
-    items: [] // No child items
-  },
-    {
-    title: 'Manufacturer',
-    url: '/dashboard/manufacturer',
-    icon: 'kanban',
-    shortcut: ['k', 'k'],
-    isActive: false,
-    items: [] // No child items
-  },
+  }, 
    {
     title: 'Orders',
     url: '/dashboard/orders',
-    icon: 'kanban',
-    shortcut: ['k', 'k'],
-    isActive: false,
-    items: [] // No child items
-  },
-   {
-    title: 'Delivery',
-    url: '/dashboard/delivery',
     icon: 'kanban',
     shortcut: ['k', 'k'],
     isActive: false,
@@ -124,34 +52,7 @@ export const navItems: NavItem[] = [
     shortcut: ['k', 'k'],
     isActive: false,
     items: [] // No child items
-  },
-    {
-    title: 'UAC',
-    url: '/dashboard/uac',
-    icon: 'kanban',
-    shortcut: ['k', 'k'],
-    isActive: false,
-        items: [
-      {
-        title: 'Permissions',
-        url: '/dashboard/permissions',
-        icon: 'userPen',
-        shortcut: ['m', 'm']
-      },
-      {
-        title: 'Roles',
-        shortcut: ['l', 'l'],
-        url: '/roles',
-        icon: 'login'
-      },
-      {
-        title: 'Users',
-        shortcut: ['l', 'l'],
-        url: '/users',
-        icon: 'login'
-      }
-    ]
-  },
+  }
 ];
 
 export interface SaleUser {

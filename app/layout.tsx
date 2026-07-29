@@ -17,12 +17,18 @@ const META_THEME_COLORS = {
 };
 
 export const metadata: Metadata = {
-  title: 'Next Shadcn',
-  description: 'Basic dashboard with Next.js and Shadcn'
+  title: 'Ecommerce Admin Dashboard',
+  description: 'A modern and responsive admin dashboard template built with Next.js, TypeScript, and Tailwind CSS.',
 };
 
 export const viewport: Viewport = {
-  themeColor: META_THEME_COLORS.light
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: META_THEME_COLORS.light },
+    { media: '(prefers-color-scheme: dark)', color: META_THEME_COLORS.dark }
+  ]
 };
 
 export default async function RootLayout({

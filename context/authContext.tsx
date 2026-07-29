@@ -1,4 +1,5 @@
 "use client"
+import { API_BASE_URL } from '@/constants';
 import { User } from '@/types';
 import React, { createContext, ReactNode, useContext, useState, useEffect } from 'react';
 
@@ -15,9 +16,9 @@ interface AuthContextType {
 // Create the AuthContext with default values
 const AuthContext = createContext<AuthContextType>({
   user: null,
-  login: async () => {},
-  register: async () => {},
-  logout: async () => {},
+  login: async () => { },
+  register: async () => { },
+  logout: async () => { },
   isAuthenticated: false,
   loading: true,
 });
@@ -36,7 +37,7 @@ function AuthContextProvider({ children }: { children: ReactNode }) {
       const token = localStorage.getItem('token');
       if (token) {
         try {
-          const res = await fetch('/api/protected', {
+          const res = await fetch(`${API_BASE_URL}/api/protected`, {
             headers: { Authorization: `Bearer ${token}` },
           });
           if (res.ok) {
@@ -59,19 +60,24 @@ function AuthContextProvider({ children }: { children: ReactNode }) {
   // Login function
   const login = async (email: string, password: string) => {
     try {
-      const res = await fetch('http://localhost:8080/api/v1/auth/login', {
+      const res = await fetch(`${API_BASE_URL}/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email:email, password:password,device_name:"Windows 10" }),
+        body: JSON.stringify({ email: email, password: password, device_name: "Windows 10" }),
       });
 
-
-      const {data} = await res.json();
+      const { token } = await res.json();
       if (res.ok) {
-        localStorage.setItem('token', data.token);
-        setUser(data.user || { userId: '', email, name: '', avatar: '' });
+        await fetch(`${API_BASE_URL}/users/me`, {
+          method: 'GET',
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        }).then(res => res.json()).then(user => {
+          localStorage.setItem('token', token);
+          setUser(user);
+        });
+
       } else {
-        throw new Error(data.message || 'Login failed');
+        throw new Error('Login failed');
       }
     } catch (error: any) {
       throw new Error(error.message || 'Login failed');
@@ -81,7 +87,7 @@ function AuthContextProvider({ children }: { children: ReactNode }) {
   // Register function
   const register = async (email: string, password: string, name?: string) => {
     try {
-      const res = await fetch('http://localhost:8080/api/v1/auth/register', {
+      const res = await fetch(`${API_BASE_URL}/auth/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password, name }),
@@ -113,11 +119,8 @@ function AuthContextProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  // Derived state for authentication status
-  const isAuthenticated = !!user;
-
   return (
-    <AuthContext.Provider value={{ user, login, register, logout, isAuthenticated, loading }}>
+    <AuthContext.Provider value={{ user, login, register, logout, isAuthenticated:!!user, loading }}>
       {children}
     </AuthContext.Provider>
   );

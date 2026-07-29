@@ -28,13 +28,8 @@ interface PageProps extends React.ComponentProps<"div"> {
 }
 
 export default function Page({ className, searchParams, ...props }: PageProps) {
-  const { login,isAuthenticated } = useAuth();
+  const { login, user } = useAuth();
   const router = useRouter();
-  //  if(isAuthenticated){
-  //   console.log("Authenticated")
-  //    redirect("/dashboard")
-
-  // }
   const [error, setError] = useState<string>("");
   const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<LoginFormData>({
     defaultValues: {
@@ -47,7 +42,7 @@ export default function Page({ className, searchParams, ...props }: PageProps) {
     try {
       setError("");
       await login(data.email, data.password);
-      isAuthenticated && router.push("/dashboard");
+      !!user && router.push("/dashboard");
     } catch (err: any) {
       setError(err.message || "Login failed");
     }
