@@ -59,7 +59,7 @@ const tenants = [
 ];
 
 export default function AppSidebar() {
-  const {user,logout,isAuthenticated}=useAuth();
+  const { user, logout, isAuthenticated } = useAuth();
   const pathname = usePathname();
   const { isOpen } = useMediaQuery();
   const router = useRouter();
@@ -69,13 +69,13 @@ export default function AppSidebar() {
 
   const activeTenant = tenants[0];
 
- useEffect(() => {
+  useEffect(() => {
     // Side effects based on sidebar state changes
   }, [isOpen]);
 
-  useEffect(()=>{
-    if(isAuthenticated) return redirect("/auth/sign-in")
-  },[isAuthenticated])
+  useEffect(() => {
+    if (isAuthenticated) return redirect('/auth/sign-in');
+  }, [isAuthenticated]);
   return (
     <Sidebar collapsible='icon'>
       <SidebarHeader>
@@ -111,7 +111,7 @@ export default function AppSidebar() {
                     </CollapsibleTrigger>
                     <CollapsibleContent>
                       <SidebarMenuSub>
-                        {item.items?.map((subItem,index) => (
+                        {item.items?.map((subItem, index) => (
                           <SidebarMenuSubItem key={index}>
                             <SidebarMenuSubButton
                               asChild

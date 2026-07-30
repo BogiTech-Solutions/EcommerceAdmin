@@ -19,7 +19,8 @@ const META_THEME_COLORS = {
 
 export const metadata: Metadata = {
   title: 'Ecommerce Admin Dashboard',
-  description: 'A modern and responsive admin dashboard template built with Next.js, TypeScript, and Tailwind CSS.',
+  description:
+    'A modern and responsive admin dashboard template built with Next.js, TypeScript, and Tailwind CSS.'
 };
 
 export const viewport: Viewport = {
@@ -63,24 +64,24 @@ export default async function RootLayout({
           isScaled ? 'theme-scaled' : '',
           fontVariables
         )}
-      ><AuthContextProvider>
-
-        <NextTopLoader color='var(--primary)' showSpinner={false} />
-        <NuqsAdapter>
-          <ThemeProvider
-            attribute='class'
-            defaultTheme='system'
-            enableSystem
-            disableTransitionOnChange
-            enableColorScheme
-          >
-            <Providers activeThemeValue={activeThemeValue as string}>
-              <Toaster />
-              {children}
-            </Providers>
-          </ThemeProvider>
-        </NuqsAdapter>
-      </AuthContextProvider>
+      >
+        <AuthContextProvider>
+          <NextTopLoader color='var(--primary)' showSpinner={false} />
+          <NuqsAdapter>
+            <ThemeProvider
+              attribute='class'
+              defaultTheme='system'
+              enableSystem
+              disableTransitionOnChange
+              enableColorScheme
+            >
+              <Providers activeThemeValue={activeThemeValue as string}>
+                <Toaster />
+                {children}
+              </Providers>
+            </ThemeProvider>
+          </NuqsAdapter>
+        </AuthContextProvider>
       </body>
     </html>
   );

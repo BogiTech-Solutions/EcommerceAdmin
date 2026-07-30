@@ -2,9 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { Bar, BarChart, CartesianGrid, XAxis } from 'recharts';
 
-import {
-  Card,
-  CardContent} from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import {
   ChartConfig,
   ChartContainer,
@@ -127,9 +125,7 @@ const chartConfig = {
 } satisfies ChartConfig;
 
 export function BarGraph() {
-  const [activeChart] =
-    useState<keyof typeof chartConfig>('desktop');
-
+  const [activeChart] = useState<keyof typeof chartConfig>('desktop');
 
   useEffect(() => {
     if (activeChart === 'error') {

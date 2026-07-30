@@ -13,8 +13,7 @@ interface Tenant {
   name: string;
 }
 
-export function OrgSwitcher({
-}: {
+export function OrgSwitcher({}: {
   tenants: Tenant[];
   defaultTenant: Tenant;
   onTenantSwitch?: (tenantId: string) => void;

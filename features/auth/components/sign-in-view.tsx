@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 };
 
 export default function SignInViewPage({ stars }: { stars: number }) {
-  const {login}=useAuth();
+  const { login } = useAuth();
   return (
     <div className='relative h-screen flex-col items-center justify-center md:grid lg:max-w-none lg:grid-cols-2 lg:px-0'>
       <Link
@@ -72,7 +72,7 @@ export default function SignInViewPage({ stars }: { stars: number }) {
               <span className='font-display font-medium'>{stars}</span>
             </div>
           </Link>
-          <Button onClick={()=>login}>Log In</Button>
+          <Button onClick={() => login}>Log In</Button>
 
           <p className='text-muted-foreground px-8 text-center text-sm'>
             By clicking continue, you agree to our{' '}

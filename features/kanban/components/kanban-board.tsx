@@ -22,7 +22,7 @@ import { BoardColumn, BoardContainer } from './board-column';
 import NewSectionDialog from './new-section-dialog';
 import { TaskCard } from './task-card';
 
-export type ColumnId = "TODO" | "IN_PROGRESS" | "DONE"
+export type ColumnId = 'TODO' | 'IN_PROGRESS' | 'DONE';
 
 interface UseTaskStoreState {
   columns: Column[];
@@ -33,16 +33,23 @@ interface UseTaskStoreState {
 
 export function KanbanBoard() {
   // const [columns, setColumns] = useState<Column[]>(defaultCols);
-  const columns: Column[] = useTaskStore((state: UseTaskStoreState) => state.columns);
-  const setColumns: (columns: Column[]) => void = useTaskStore((state: UseTaskStoreState) => state.setCols);
-  const pickedUpTaskColumn = useRef<ColumnId>(
-    'TODO'
+  const columns: Column[] = useTaskStore(
+    (state: UseTaskStoreState) => state.columns
   );
-  const columnsId = useMemo(() => columns.map((col) => col.id as ColumnId), [columns]);
+  const setColumns: (columns: Column[]) => void = useTaskStore(
+    (state: UseTaskStoreState) => state.setCols
+  );
+  const pickedUpTaskColumn = useRef<ColumnId>('TODO');
+  const columnsId = useMemo(
+    () => columns.map((col) => col.id as ColumnId),
+    [columns]
+  );
 
   // const [tasks, setTasks] = useState<Task[]>(initialTasks);
   const tasks: Task[] = useTaskStore((state: UseTaskStoreState) => state.tasks);
-  const setTasks: (tasks: Task[]) => void = useTaskStore((state: UseTaskStoreState) => state.setTasks);
+  const setTasks: (tasks: Task[]) => void = useTaskStore(
+    (state: UseTaskStoreState) => state.setTasks
+  );
   const [activeColumn, setActiveColumn] = useState<Column | null>(null);
 
   const [activeTask, setActiveTask] = useState<Task | null>(null);

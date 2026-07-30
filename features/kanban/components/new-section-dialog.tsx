@@ -22,7 +22,9 @@ interface FormValues {
 }
 
 export default function NewSectionDialog() {
-  const addCol: (title: string) => void = useTaskStore((state: TaskStore) => state.addCol);
+  const addCol: (title: string) => void = useTaskStore(
+    (state: TaskStore) => state.addCol
+  );
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();

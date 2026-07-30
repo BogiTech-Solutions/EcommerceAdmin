@@ -28,16 +28,16 @@ export const navItems: NavItem[] = [
     shortcut: ['p', 'p'],
     isActive: false,
     items: [] // No child items
-  },  
-   {
+  },
+  {
     title: 'Users',
     url: '/dashboard/users',
     icon: 'user',
     shortcut: ['u', 'u'],
     isActive: false,
     items: [] // No child items
-  }, 
-   {
+  },
+  {
     title: 'Orders',
     url: '/dashboard/orders',
     icon: 'kanban',
@@ -45,7 +45,7 @@ export const navItems: NavItem[] = [
     isActive: false,
     items: [] // No child items
   },
-{
+  {
     title: 'Ads',
     url: '/dashboard/ads',
     icon: 'kanban',

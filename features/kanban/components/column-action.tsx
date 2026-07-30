@@ -37,13 +37,14 @@ interface RemoveColFn {
   (id: UniqueIdentifier): void;
 }
 
-export function ColumnActions({
-  title,
-  id
-}: ColumnActionsProps) {
+export function ColumnActions({ title, id }: ColumnActionsProps) {
   const [name, setName] = React.useState(title);
-  const updateCol = useTaskStore((state: { updateCol: UpdateColFn }) => state.updateCol);
-  const removeCol = useTaskStore((state: { removeCol: RemoveColFn }) => state.removeCol);
+  const updateCol = useTaskStore(
+    (state: { updateCol: UpdateColFn }) => state.updateCol
+  );
+  const removeCol = useTaskStore(
+    (state: { removeCol: RemoveColFn }) => state.removeCol
+  );
   const [editDisable, setIsEditDisable] = React.useState(true);
   const [showDeleteDialog, setShowDeleteDialog] = React.useState(false);
   const inputRef = React.useRef<HTMLInputElement>(null);
@@ -78,7 +79,7 @@ export function ColumnActions({
             onSelect={() => {
               setIsEditDisable(!editDisable);
               setTimeout(() => {
-                if(inputRef.current) inputRef.current?.focus();
+                if (inputRef.current) inputRef.current?.focus();
               }, 500);
             }}
           >

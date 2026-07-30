@@ -29,14 +29,13 @@ export interface FooterItem {
     external?: boolean;
   }[];
 }
-export interface User{
-  userId:string,
-  name:string,
-  email:string,
-  avatar:string,
+export interface User {
+  userId: string;
+  name: string;
+  email: string;
+  avatar: string;
 }
 
 export type MainNavItem = NavItemWithOptionalChildren;
 
 export type SidebarNavItem = NavItemWithChildren;
-

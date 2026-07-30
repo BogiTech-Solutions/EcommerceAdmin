@@ -1,9 +1,7 @@
-import React, { ReactNode } from 'react'
+import React, { ReactNode } from 'react';
 
-function CategoryLayout({children}:{children:ReactNode}) {
-  return (
-    <div>{children}</div>
-  )
+function CategoryLayout({ children }: { children: ReactNode }) {
+  return <div>{children}</div>;
 }
 
-export default CategoryLayout
+export default CategoryLayout;

@@ -1,9 +1,7 @@
-import React from 'react'
+import React from 'react';
 
 function Page() {
-  return (
-    <div>Sub Category Page</div>
-  )
+  return <div>Sub Category Page</div>;
 }
 
-export default Page
+export default Page;

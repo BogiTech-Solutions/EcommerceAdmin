@@ -17,8 +17,9 @@ import {
 import { cn } from '@/lib/utils';
 import { Label } from '@/components/ui/label';
 
-interface FormProps<TFieldValues extends FieldValues = FieldValues>
-  extends Omit<React.ComponentProps<'form'>, 'onSubmit'> {
+interface FormProps<
+  TFieldValues extends FieldValues = FieldValues
+> extends Omit<React.ComponentProps<'form'>, 'onSubmit'> {
   children: React.ReactNode;
   onSubmit?: React.FormEventHandler<HTMLFormElement>;
   form: UseFormReturn<TFieldValues>;

@@ -14,15 +14,11 @@ export function useIsMobile() {
   // 2. Define how to grab the current snapshot value from the DOM
   const getSnapshot = () => {
     return window.matchMedia(query).matches;
-  }
+  };
 
   // 3. Fallback value for Server-Side Rendering (SSR) environments
   const getServerSnapshot = () => false;
 
   // React safely reads and synchronizes the state without cascading renders
-  return React.useSyncExternalStore(
-    subscribe,
-    getSnapshot,
-    getServerSnapshot
-  );
+  return React.useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 }

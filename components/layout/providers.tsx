@@ -9,11 +9,10 @@ export default function Providers({
   activeThemeValue: string;
   children: React.ReactNode;
 }) {
-
   return (
     <>
       <ActiveThemeProvider initialTheme={activeThemeValue}>
-          {children}
+        {children}
       </ActiveThemeProvider>
     </>
   );

@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import React from 'react';
 
@@ -34,7 +34,9 @@ export default function NewTaskDialog() {
 
     const form = e.currentTarget;
     const formData = new FormData(form);
-    const { title, description } = Object.fromEntries(formData) as unknown as NewTask;
+    const { title, description } = Object.fromEntries(
+      formData
+    ) as unknown as NewTask;
 
     if (typeof title !== 'string' || typeof description !== 'string') return;
     addTask(title, description);

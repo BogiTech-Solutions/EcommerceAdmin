@@ -14,7 +14,6 @@ export default function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-
   return (
     <KBar>
       <SidebarProvider defaultOpen={true}>
