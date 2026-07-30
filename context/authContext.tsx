@@ -47,7 +47,8 @@ function AuthContextProvider({ children }: { children: ReactNode }) {
             localStorage.removeItem('token');
             setUser(null);
           }
-        } catch (error) {
+        } catch (err) {
+          console.log(err)
           localStorage.removeItem('token');
           setUser(null);
         }
@@ -58,32 +59,36 @@ function AuthContextProvider({ children }: { children: ReactNode }) {
   }, []);
 
   // Login function
-  const login = async (email: string, password: string) => {
-    console.log("NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNnn")
-    try {
-      const res = await fetch(`${API_BASE_URL}/auth/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: email, password: password, device_name: "Windows 10" }),
-      });
+ const login = async (email: string, password: string) => {
+  try {
+    const res = await fetch(`${API_BASE_URL}/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password, device_name: "Windows 10" }), // Shorthand syntax applied
+    });
 
-      const { token } = await res.json();
-      if (res.ok) {
-        await fetch(`${API_BASE_URL}/users/me`, {
-          method: 'GET',
-          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-        }).then(res => res.json()).then(user => {
+    const { token } = await res.json();
+    if (res.ok) {
+      await fetch(`${API_BASE_URL}/users/me`, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+      })
+        .then((res) => res.json())
+        .then((user) => {
           localStorage.setItem('token', token);
           setUser(user);
         });
-
-      } else {
-        throw new Error('Login failed');
-      }
-    } catch (error: any) {
-      throw new Error(error.message || 'Login failed');
+    } else {
+      throw new Error('Login failed');
     }
-  };
+  } catch (error: unknown) { 
+    if (error instanceof Error) {
+      throw new Error(error.message);
+    }
+    throw new Error('Login failed');
+  }
+};
+
 
   // Register function
   const register = async (email: string, password: string, name?: string) => {
@@ -99,8 +104,11 @@ function AuthContextProvider({ children }: { children: ReactNode }) {
       } else {
         throw new Error(data.message || 'Registration failed');
       }
-    } catch (error: any) {
-      throw new Error(error.message || 'Registration failed');
+    } catch (error: unknown) { 
+    if (error instanceof Error) {
+      throw new Error(error.message);
+    }
+      throw new Error('Registration failed');
     }
   };
 

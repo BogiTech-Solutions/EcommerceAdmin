@@ -1,4 +1,6 @@
-'use client';
+"use client";
+
+import React from 'react';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -15,15 +17,24 @@ import { Textarea } from '@/components/ui/textarea';
 
 import { useTaskStore } from '../utils/store';
 
+interface TaskStore {
+  addTask: (title: string, description: string) => void;
+}
+
+interface NewTask {
+  title: string;
+  description: string;
+}
+
 export default function NewTaskDialog() {
-  const addTask = useTaskStore((state) => state.addTask);
+  const addTask = useTaskStore((state: TaskStore) => state.addTask);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     const form = e.currentTarget;
     const formData = new FormData(form);
-    const { title, description } = Object.fromEntries(formData);
+    const { title, description } = Object.fromEntries(formData) as unknown as NewTask;
 
     if (typeof title !== 'string' || typeof description !== 'string') return;
     addTask(title, description);
@@ -36,7 +47,7 @@ export default function NewTaskDialog() {
           ＋ Add New Todo
         </Button>
       </DialogTrigger>
-      <DialogContent className='sm:max-w-[425px]'>
+      <DialogContent className='sm:max-w-106.25'>
         <DialogHeader>
           <DialogTitle>Add New Todo</DialogTitle>
           <DialogDescription>

@@ -21,43 +21,33 @@ import type { Column } from './board-column';
 import { BoardColumn, BoardContainer } from './board-column';
 import NewSectionDialog from './new-section-dialog';
 import { TaskCard } from './task-card';
-// import { coordinateGetter } from "./multipleContainersKeyboardPreset";
 
-const defaultCols = [
-  {
-    id: 'TODO' as const,
-    title: 'Todo'
-  },
-  {
-    id: 'IN_PROGRESS' as const,
-    title: 'In progress'
-  },
-  {
-    id: 'DONE' as const,
-    title: 'Done'
-  }
-] satisfies Column[];
+export type ColumnId = "TODO" | "IN_PROGRESS" | "DONE"
 
-export type ColumnId = (typeof defaultCols)[number]['id'];
+interface UseTaskStoreState {
+  columns: Column[];
+  setCols: (columns: Column[]) => void;
+  tasks: Task[];
+  setTasks: (tasks: Task[]) => void;
+}
 
 export function KanbanBoard() {
   // const [columns, setColumns] = useState<Column[]>(defaultCols);
-  const columns = useTaskStore((state) => state.columns);
-  const setColumns = useTaskStore((state) => state.setCols);
-  const pickedUpTaskColumn = useRef<ColumnId | 'TODO' | 'IN_PROGRESS' | 'DONE'>(
+  const columns: Column[] = useTaskStore((state: UseTaskStoreState) => state.columns);
+  const setColumns: (columns: Column[]) => void = useTaskStore((state: UseTaskStoreState) => state.setCols);
+  const pickedUpTaskColumn = useRef<ColumnId>(
     'TODO'
   );
-  const columnsId = useMemo(() => columns.map((col) => col.id), [columns]);
+  const columnsId = useMemo(() => columns.map((col) => col.id as ColumnId), [columns]);
 
   // const [tasks, setTasks] = useState<Task[]>(initialTasks);
-  const tasks = useTaskStore((state) => state.tasks);
-  const setTasks = useTaskStore((state) => state.setTasks);
+  const tasks: Task[] = useTaskStore((state: UseTaskStoreState) => state.tasks);
+  const setTasks: (tasks: Task[]) => void = useTaskStore((state: UseTaskStoreState) => state.setTasks);
   const [activeColumn, setActiveColumn] = useState<Column | null>(null);
-  const [isMounted, setIsMounted] = useState<boolean>(false);
 
   const [activeTask, setActiveTask] = useState<Task | null>(null);
 
-  const sensors = useSensors(
+  const sensors: ReturnType<typeof useSensors> = useSensors(
     useSensor(MouseSensor),
     useSensor(TouchSensor)
     // useSensor(KeyboardSensor, {
@@ -66,13 +56,8 @@ export function KanbanBoard() {
   );
 
   useEffect(() => {
-    setIsMounted(true);
-  }, [isMounted]);
-
-  useEffect(() => {
     useTaskStore.persist.rehydrate();
   }, []);
-  if (!isMounted) return;
 
   function getDraggingTaskData(taskId: UniqueIdentifier, columnId: ColumnId) {
     const tasksInColumn = tasks.filter((task) => task.status === columnId);
@@ -197,7 +182,7 @@ export function KanbanBoard() {
                 tasks={tasks.filter((task) => task.status === col.id)}
               />
               {index === columns?.length - 1 && (
-                <div className='w-[300px]'>
+                <div className='w-75'>
                   <NewSectionDialog />
                 </div>
               )}

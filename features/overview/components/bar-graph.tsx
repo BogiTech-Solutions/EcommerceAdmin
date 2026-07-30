@@ -1,15 +1,10 @@
 'use client';
-
-import * as React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Bar, BarChart, CartesianGrid, XAxis } from 'recharts';
 
 import {
   Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle
-} from '@/components/ui/card';
+  CardContent} from '@/components/ui/card';
 import {
   ChartConfig,
   ChartContainer,
@@ -132,35 +127,18 @@ const chartConfig = {
 } satisfies ChartConfig;
 
 export function BarGraph() {
-  const [activeChart, setActiveChart] =
-    React.useState<keyof typeof chartConfig>('desktop');
+  const [activeChart] =
+    useState<keyof typeof chartConfig>('desktop');
 
-  const total = React.useMemo(
-    () => ({
-      desktop: chartData.reduce((acc, curr) => acc + curr.desktop, 0),
-      mobile: chartData.reduce((acc, curr) => acc + curr.mobile, 0)
-    }),
-    []
-  );
 
-  const [isClient, setIsClient] = React.useState(false);
-
-  React.useEffect(() => {
-    setIsClient(true);
-  }, []);
-
-  React.useEffect(() => {
+  useEffect(() => {
     if (activeChart === 'error') {
       throw new Error('Mocking Error');
     }
   }, [activeChart]);
 
-  if (!isClient) {
-    return null;
-  }
-
   return (
-    <Card className='@container/card !pt-3'>
+    <Card className='@container/card pt-3!'>
       {/* <CardHeader className='flex flex-col items-stretch space-y-0 border-b !p-0 sm:flex-row'>
         <div className='flex flex-1 flex-col justify-center gap-1 px-6 !py-0'>
           <CardTitle>Bar Chart - Interactive</CardTitle>
@@ -196,7 +174,7 @@ export function BarGraph() {
       <CardContent className='px-2 pt-4 sm:px-6 sm:pt-6'>
         <ChartContainer
           config={chartConfig}
-          className='aspect-auto h-[250px] w-full'
+          className='aspect-auto h-62.5 w-full'
         >
           <BarChart
             data={chartData}
@@ -238,7 +216,7 @@ export function BarGraph() {
               cursor={{ fill: 'var(--primary)', opacity: 0.1 }}
               content={
                 <ChartTooltipContent
-                  className='w-[150px]'
+                  className='w-37.5'
                   nameKey='views'
                   labelFormatter={(value) => {
                     return new Date(value).toLocaleDateString('en-US', {

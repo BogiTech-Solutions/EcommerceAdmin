@@ -1,6 +1,6 @@
 'use client';
 
-import { useForm } from 'react-hook-form';
+import { useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Button } from '@/components/ui/button';
@@ -110,6 +110,9 @@ export default function DemoForm() {
       avatar: []
     }
   });
+
+  // Safely watch form values for display
+  const formValues = useWatch({ control: form.control });
 
   const onSubmit = (data: DemoFormData) => {
     console.log('Form submitted:', data);
@@ -294,7 +297,7 @@ export default function DemoForm() {
         </CardHeader>
         <CardContent>
           <pre className='bg-muted overflow-auto rounded-lg p-4 text-sm'>
-            {JSON.stringify(form.watch(), null, 2)}
+            {JSON.stringify(formValues, null, 2)}
           </pre>
         </CardContent>
       </Card>

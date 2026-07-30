@@ -4,6 +4,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger
 } from '@/components/ui/collapsible';
+import React, { useEffect } from 'react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -42,7 +43,6 @@ import {
 } from '@tabler/icons-react';
 import Link from 'next/link';
 import { redirect, usePathname, useRouter } from 'next/navigation';
-import * as React from 'react';
 import { Icons } from '../icons';
 import { OrgSwitcher } from '../org-switcher';
 import { useAuth } from '@/context/authContext';
@@ -69,11 +69,13 @@ export default function AppSidebar() {
 
   const activeTenant = tenants[0];
 
-  React.useEffect(() => {
+ useEffect(() => {
     // Side effects based on sidebar state changes
   }, [isOpen]);
 
-!isAuthenticated && redirect("/auth/sign-in")
+  useEffect(()=>{
+    if(isAuthenticated) return redirect("/auth/sign-in")
+  },[isAuthenticated])
   return (
     <Sidebar collapsible='icon'>
       <SidebarHeader>

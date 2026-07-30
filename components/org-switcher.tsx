@@ -1,14 +1,7 @@
 'use client';
 
-import { Check, ChevronsUpDown, GalleryVerticalEnd } from 'lucide-react';
-import * as React from 'react';
+import { ChevronsUpDown, GalleryVerticalEnd } from 'lucide-react';
 
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger
-} from '@/components/ui/dropdown-menu';
 import {
   SidebarMenu,
   SidebarMenuButton,
@@ -21,9 +14,6 @@ interface Tenant {
 }
 
 export function OrgSwitcher({
-  tenants,
-  defaultTenant,
-  onTenantSwitch
 }: {
   tenants: Tenant[];
   defaultTenant: Tenant;
@@ -32,18 +22,18 @@ export function OrgSwitcher({
   return (
     <SidebarMenu>
       <SidebarMenuItem>
-            <SidebarMenuButton
-              size='lg'
-              className='data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground'
-            >
-              <div className='bg-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg'>
-                <GalleryVerticalEnd className='size-4' />
-              </div>
-              <div className='flex flex-col gap-0.5 leading-none'>
-                <span className='font-bold'>Ecommerce Admin</span>
-              </div>
-              <ChevronsUpDown className='ml-auto' />
-            </SidebarMenuButton>
+        <SidebarMenuButton
+          size='lg'
+          className='data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground'
+        >
+          <div className='bg-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg'>
+            <GalleryVerticalEnd className='size-4' />
+          </div>
+          <div className='flex flex-col gap-0.5 leading-none'>
+            <span className='font-bold'>Ecommerce Admin</span>
+          </div>
+          <ChevronsUpDown className='ml-auto' />
+        </SidebarMenuButton>
       </SidebarMenuItem>
     </SidebarMenu>
   );

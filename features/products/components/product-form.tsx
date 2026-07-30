@@ -4,12 +4,13 @@ import { FormFileUpload } from '@/components/forms/form-file-upload';
 import { FormInput } from '@/components/forms/form-input';
 import { FormSelect } from '@/components/forms/form-select';
 import { FormTextarea } from '@/components/forms/form-textarea';
-import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Form } from '@/components/ui/form';
 import { Product } from '@/constants/mock-api';
+import { Button } from '@/ui/button';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
-import { Form, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 
 const MAX_FILE_SIZE = 5000000;
@@ -77,7 +78,7 @@ export default function ProductForm({
         </CardTitle>
       </CardHeader>
       <CardContent>
-        {/* <Form
+        <Form
           form={form}
           onSubmit={form.handleSubmit(onSubmit)}
           className='space-y-8'
@@ -154,7 +155,7 @@ export default function ProductForm({
           />
 
           <Button type='submit'>Add Product</Button>
-        </Form> */}
+        </Form>
       </CardContent>
     </Card>
   );

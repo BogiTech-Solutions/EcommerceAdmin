@@ -20,7 +20,6 @@ export default function StatsError({ error, reset }: StatsErrorProps) {
     Sentry.captureException(error);
   }, [error]);
 
-  // the reload fn ensures the refresh is deffered  until the next render phase allowing react to handle any pending states before processing
   const reload = () => {
     startTransition(() => {
       router.refresh();
@@ -40,7 +39,7 @@ export default function StatsError({ error, reset }: StatsErrorProps) {
           </Alert>
         </div>
       </CardHeader>
-      <CardContent className='flex h-[316px] items-center justify-center p-6'>
+      <CardContent className='flex h-79 items-center justify-center p-6'>
         <div className='text-center'>
           <p className='text-muted-foreground mb-4 text-sm'>
             Unable to display statistics at this time
@@ -48,7 +47,7 @@ export default function StatsError({ error, reset }: StatsErrorProps) {
           <Button
             onClick={() => reload()}
             variant='outline'
-            className='min-w-[120px]'
+            className='min-w-30'
             disabled={isPending}
           >
             Try again

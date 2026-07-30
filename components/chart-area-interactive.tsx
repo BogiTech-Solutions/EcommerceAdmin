@@ -141,14 +141,21 @@ const chartConfig = {
 } satisfies ChartConfig
 
 export function ChartAreaInteractive() {
-  const isMobile = useIsMobile()
-  const [timeRange, setTimeRange] = React.useState("90d")
+  // const isMobile = useIsMobile()
+  // const [timeRange, setTimeRange] = React.useState("90d")
+  // function handleMobile() {
+  //   if (isMobile) {
+  //     setTimeRange("7d")
+  //   }
+  // }
+  // React.useEffect(() => {
+  //   handleMobile()
+  // }, [isMobile])
 
-  React.useEffect(() => {
-    if (isMobile) {
-      setTimeRange("7d")
-    }
-  }, [isMobile])
+  const isMobile = useIsMobile();
+
+// Initialize state dynamically based on the current mobile layout condition
+const [timeRange, setTimeRange] = React.useState(() => (isMobile ? "7d" : "90d"));
 
   const filteredData = chartData.filter((item) => {
     const date = new Date(item.date)
@@ -211,7 +218,7 @@ export function ChartAreaInteractive() {
       <CardContent className="px-2 pt-4 sm:px-6 sm:pt-6">
         <ChartContainer
           config={chartConfig}
-          className="aspect-auto h-[250px] w-full"
+          className="aspect-auto h-62.5 w-full"
         >
           <AreaChart data={filteredData}>
             <defs>

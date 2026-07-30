@@ -27,7 +27,7 @@ interface PageProps extends React.ComponentProps<"div"> {
   searchParams?: { [key: string]: string | string[] | undefined };
 }
 
-export default function Page({ className, searchParams, ...props }: PageProps) {
+export default function Page({ className, ...props }: PageProps) {
   const { login, user } = useAuth();
   const router = useRouter();
   const [error, setError] = useState<string>("");
@@ -42,11 +42,15 @@ export default function Page({ className, searchParams, ...props }: PageProps) {
    
     try {
       setError("");
-      const rrr=await login(data.email, data.password);
-      console.log(rrr,user,{email:data.email, pwd:data.password},"RRRRRRRRRRRRRRRRR")
-      !!user && router.push("/dashboard");
-    } catch (err: any) {
-      setError(err.message || "Login failed");
+      login(data.email, data.password).then(()=>{
+        if(!!user) return router.push("/dashboard");
+        return
+      });
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+      throw new Error(error.message);
+    }
+      setError("Login failed");
     }
   };
 

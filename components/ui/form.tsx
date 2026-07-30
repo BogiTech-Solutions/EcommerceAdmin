@@ -17,20 +17,24 @@ import {
 import { cn } from '@/lib/utils';
 import { Label } from '@/components/ui/label';
 
-const Form = ({
+interface FormProps<TFieldValues extends FieldValues = FieldValues>
+  extends Omit<React.ComponentProps<'form'>, 'onSubmit'> {
+  children: React.ReactNode;
+  onSubmit?: React.FormEventHandler<HTMLFormElement>;
+  form: UseFormReturn<TFieldValues>;
+  className?: string;
+}
+
+const Form = <TFieldValues extends FieldValues = FieldValues>({
   children,
   onSubmit,
   form,
-  className
-}: {
-  children: React.ReactNode;
-  onSubmit: (data: any) => void;
-  form: UseFormReturn<any, any, undefined>;
-  className?: string;
-}) => {
+  className,
+  ...props
+}: FormProps<TFieldValues>) => {
   return (
     <FormProvider {...form}>
-      <form onSubmit={onSubmit} className={className}>
+      <form onSubmit={onSubmit} className={className} {...props}>
         {children}
       </form>
     </FormProvider>

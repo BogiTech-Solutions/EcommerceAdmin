@@ -13,15 +13,23 @@ import { Input } from '@/components/ui/input';
 
 import { useTaskStore } from '../utils/store';
 
+interface TaskStore {
+  addCol: (title: string) => void;
+}
+
+interface FormValues {
+  title?: string;
+}
+
 export default function NewSectionDialog() {
-  const addCol = useTaskStore((state) => state.addCol);
+  const addCol: (title: string) => void = useTaskStore((state: TaskStore) => state.addCol);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     const form = e.currentTarget;
     const formData = new FormData(form);
-    const { title } = Object.fromEntries(formData);
+    const { title } = Object.fromEntries(formData) as FormValues;
 
     if (typeof title !== 'string') return;
     addCol(title);
@@ -34,7 +42,7 @@ export default function NewSectionDialog() {
           ＋ Add New Section
         </Button>
       </DialogTrigger>
-      <DialogContent className='sm:max-w-[425px]'>
+      <DialogContent className='sm:max-w-106.25'>
         <DialogHeader>
           <DialogTitle>Add New Section</DialogTitle>
           <DialogDescription>
