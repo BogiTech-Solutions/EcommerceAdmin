@@ -1,16 +1,9 @@
 'use client';
-import { useAuth } from '@/context/authContext';
 import { redirect } from 'next/navigation';
-import { useEffect } from 'react';
+
+import { useAuth } from '@/context/authContext';
 
 export default function Dashboard() {
-  function navigateT(param: boolean) {
-    return param ? redirect('/dashboard/overview') : redirect('/auth/sign-in');
-  }
   const { isAuthenticated } = useAuth();
-  useEffect(() => {
-    navigateT(isAuthenticated);
-  }, [isAuthenticated]);
-
-  return <></>;
+  isAuthenticated ? redirect('/dashboard/overview') : redirect('/auth/sign-in');
 }

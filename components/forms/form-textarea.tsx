@@ -1,6 +1,7 @@
 'use client';
 
 import { FieldPath, FieldValues } from 'react-hook-form';
+
 import {
   FormControl,
   FormDescription,
@@ -34,12 +35,7 @@ function FormTextarea<
   disabled,
   className
 }: FormTextareaProps<TFieldValues, TName>) {
-  const {
-    maxLength,
-    showCharCount = true,
-    rows = 4,
-    resize = 'vertical'
-  } = config;
+  const { maxLength, showCharCount = true, rows = 4, resize = 'vertical' } = config;
 
   return (
     <FormField
@@ -50,11 +46,11 @@ function FormTextarea<
           {label && (
             <FormLabel>
               {label}
-              {required && <span className='ml-1 text-red-500'>*</span>}
+              {required && <span className="ml-1 text-red-500">*</span>}
             </FormLabel>
           )}
           <FormControl>
-            <div className='space-y-2'>
+            <div className="space-y-2">
               <Textarea
                 placeholder={placeholder}
                 disabled={disabled}
@@ -64,7 +60,7 @@ function FormTextarea<
                 {...field}
               />
               {showCharCount && maxLength && (
-                <div className='text-muted-foreground text-right text-sm'>
+                <div className="text-muted-foreground text-right text-sm">
                   {field.value?.length || 0} / {maxLength}
                 </div>
               )}

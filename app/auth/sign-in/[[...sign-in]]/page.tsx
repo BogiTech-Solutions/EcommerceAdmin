@@ -1,13 +1,11 @@
 'use client';
-import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle
-} from '@/components/ui/card';
+
+import { GalleryVerticalEnd } from 'lucide-react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+
 import {
   Field,
   FieldDescription,
@@ -15,12 +13,11 @@ import {
   FieldLabel,
   FieldSeparator
 } from '@/components/field';
-import { GalleryVerticalEnd } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { useAuth } from '@/context/authContext';
-import { useForm } from 'react-hook-form';
-import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { cn } from '@/lib/utils';
 
 // Define form data type
 interface LoginFormData {
@@ -28,15 +25,16 @@ interface LoginFormData {
   password: string;
 }
 
-// Define props with explicit searchParams
+// Explicit Next.js Page Props
 interface PageProps extends React.ComponentProps<'div'> {
-  searchParams?: { [key: string]: string | string[] | undefined };
+  searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;
 }
 
-export default function Page({ className, ...props }: PageProps) {
+export default function Page({ className, searchParams, ...props }: PageProps) {
   const { login, user } = useAuth();
   const router = useRouter();
   const [error, setError] = useState<string>('');
+
   const {
     register,
     handleSubmit,
@@ -51,79 +49,69 @@ export default function Page({ className, ...props }: PageProps) {
   const handleLogin = async (data: LoginFormData) => {
     try {
       setError('');
-      login(data.email, data.password).then(() => {
-        if (!!user) return router.push('/dashboard');
-        return;
-      });
-    } catch (error: unknown) {
-      if (error instanceof Error) {
-        throw new Error(error.message);
+      await login(data.email, data.password);
+      if (user) {
+        router.push('/dashboard');
       }
-      setError('Login failed');
+    } catch (err: any) {
+      setError(err.message || 'Login failed');
     }
   };
 
   return (
-    <div className='bg-muted flex min-h-svh flex-col items-center justify-center gap-6 p-6 md:p-10'>
-      <div className='flex w-full max-w-sm flex-col gap-6'>
-        <a href='#' className='flex items-center gap-2 self-center font-medium'>
-          <div className='bg-primary text-primary-foreground flex size-6 items-center justify-center rounded-md'>
-            <GalleryVerticalEnd className='size-4' />
+    <div className="bg-muted flex min-h-svh flex-col items-center justify-center gap-6 p-6 md:p-10">
+      <div className="flex w-full max-w-sm flex-col gap-6">
+        <Link href="#" className="flex items-center gap-2 self-center font-medium">
+          <div className="bg-primary text-primary-foreground flex size-6 items-center justify-center rounded-md">
+            <GalleryVerticalEnd className="size-4" />
           </div>
           ECommerce Admin.
-        </a>
+        </Link>
+
+        {/* ...props is now clean and searchParams is safe */}
         <div className={cn('flex flex-col gap-6', className)} {...props}>
           <Card>
-            <CardHeader className='text-center'>
-              <CardTitle className='text-xl'>Welcome back</CardTitle>
-              <CardDescription>
-                Login with your email and password
-              </CardDescription>
+            <CardHeader className="text-center">
+              <CardTitle className="text-xl">Welcome back</CardTitle>
+              <CardDescription>Login with your email and password</CardDescription>
             </CardHeader>
             <CardContent>
               <form onSubmit={handleSubmit(handleLogin)}>
                 <FieldGroup>
-                  <FieldSeparator className='*:data-[slot=field-separator-content]:bg-card'>
+                  <FieldSeparator className="*:data-[slot=field-separator-content]:bg-card">
                     Sign in with credentials
                   </FieldSeparator>
                   <Field>
-                    <FieldLabel htmlFor='email'>Email</FieldLabel>
+                    <FieldLabel htmlFor="email">Email</FieldLabel>
                     <Input
-                      id='email'
-                      type='email'
-                      placeholder='m@example.com'
+                      id="email"
+                      type="email"
+                      placeholder="m@example.com"
                       {...register('email', { required: 'Email is required' })}
                     />
                     {errors.email && (
-                      <p style={{ color: 'red' }}>{errors.email.message}</p>
+                      <p className="text-destructive mt-1 text-xs">{errors.email.message}</p>
                     )}
                   </Field>
                   <Field>
-                    <div className='flex items-center'>
-                      <FieldLabel htmlFor='password'>Password</FieldLabel>
-                      <a
-                        href='#'
-                        className='ml-auto text-sm underline-offset-4 hover:underline'
-                      >
+                    <div className="flex items-center">
+                      <FieldLabel htmlFor="password">Password</FieldLabel>
+                      <Link href="#" className="ml-auto text-sm underline-offset-4 hover:underline">
                         Forgot your password?
-                      </a>
+                      </Link>
                     </div>
                     <Input
-                      id='password'
-                      type='password'
-                      {...register('password', {
-                        required: 'Password is required'
-                      })}
+                      id="password"
+                      type="password"
+                      {...register('password', { required: 'Password is required' })}
                     />
                     {errors.password && (
-                      <p style={{ color: 'red' }}>{errors.password.message}</p>
+                      <p className="text-destructive mt-1 text-xs">{errors.password.message}</p>
                     )}
                   </Field>
-                  {error && (
-                    <p style={{ color: 'red', textAlign: 'center' }}>{error}</p>
-                  )}
+                  {error && <p className="text-destructive mt-1 text-center text-xs">{error}</p>}
                   <Field>
-                    <Button size='lg' type='submit' disabled={isSubmitting}>
+                    <Button size="lg" type="submit" disabled={isSubmitting} className="w-full">
                       Login
                     </Button>
                   </Field>
@@ -131,9 +119,16 @@ export default function Page({ className, ...props }: PageProps) {
               </form>
             </CardContent>
           </Card>
-          <FieldDescription className='px-6 text-center'>
+          <FieldDescription className="text-muted-foreground px-6 text-center text-xs">
             By clicking continue, you agree to our{' '}
-            <a href='#'>Terms of Service</a> and <a href='#'>Privacy Policy</a>.
+            <Link href="#" className="underline">
+              Terms of Service
+            </Link>{' '}
+            and{' '}
+            <Link href="#" className="underline">
+              Privacy Policy
+            </Link>
+            .
           </FieldDescription>
         </div>
       </div>

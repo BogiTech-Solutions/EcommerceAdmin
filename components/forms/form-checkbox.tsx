@@ -1,6 +1,8 @@
 'use client';
 
 import { FieldPath, FieldValues } from 'react-hook-form';
+
+import { Checkbox } from '@/components/ui/checkbox';
 import {
   FormControl,
   FormDescription,
@@ -9,7 +11,6 @@ import {
   FormLabel,
   FormMessage
 } from '@/components/ui/form';
-import { Checkbox } from '@/components/ui/checkbox';
 import { BaseFormFieldProps } from '@/types/base-form';
 
 interface FormCheckboxProps<
@@ -37,20 +38,14 @@ function FormCheckbox<
       control={control}
       name={name}
       render={({ field }) => (
-        <FormItem
-          className={`flex flex-row items-start space-y-0 space-x-3 ${className}`}
-        >
+        <FormItem className={`flex flex-row items-start space-y-0 space-x-3 ${className}`}>
           <FormControl>
-            <Checkbox
-              checked={field.value}
-              onCheckedChange={field.onChange}
-              disabled={disabled}
-            />
+            <Checkbox checked={field.value} onCheckedChange={field.onChange} disabled={disabled} />
           </FormControl>
-          <div className='space-y-1 leading-none'>
+          <div className="space-y-1 leading-none">
             <FormLabel>
               {checkboxLabel || label}
-              {required && <span className='ml-1 text-red-500'>*</span>}
+              {required && <span className="ml-1 text-red-500">*</span>}
             </FormLabel>
             {description && <FormDescription>{description}</FormDescription>}
           </div>

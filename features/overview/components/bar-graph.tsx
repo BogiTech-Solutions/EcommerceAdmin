@@ -1,5 +1,6 @@
 'use client';
-import React, { useEffect, useState } from 'react';
+
+import * as React from 'react';
 import { Bar, BarChart, CartesianGrid, XAxis } from 'recharts';
 
 import { Card, CardContent } from '@/components/ui/card';
@@ -125,16 +126,34 @@ const chartConfig = {
 } satisfies ChartConfig;
 
 export function BarGraph() {
-  const [activeChart] = useState<keyof typeof chartConfig>('desktop');
+  const [activeChart, setActiveChart] = React.useState<keyof typeof chartConfig>('desktop');
 
-  useEffect(() => {
+  const total = React.useMemo(
+    () => ({
+      desktop: chartData.reduce((acc, curr) => acc + curr.desktop, 0),
+      mobile: chartData.reduce((acc, curr) => acc + curr.mobile, 0)
+    }),
+    []
+  );
+
+  const [isClient, setIsClient] = React.useState(false);
+
+  React.useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  React.useEffect(() => {
     if (activeChart === 'error') {
       throw new Error('Mocking Error');
     }
   }, [activeChart]);
 
+  if (!isClient) {
+    return null;
+  }
+
   return (
-    <Card className='@container/card pt-3!'>
+    <Card className="@container/card !pt-3">
       {/* <CardHeader className='flex flex-col items-stretch space-y-0 border-b !p-0 sm:flex-row'>
         <div className='flex flex-1 flex-col justify-center gap-1 px-6 !py-0'>
           <CardTitle>Bar Chart - Interactive</CardTitle>
@@ -167,11 +186,8 @@ export function BarGraph() {
           })}
         </div>
       </CardHeader> */}
-      <CardContent className='px-2 pt-4 sm:px-6 sm:pt-6'>
-        <ChartContainer
-          config={chartConfig}
-          className='aspect-auto h-62.5 w-full'
-        >
+      <CardContent className="px-2 pt-4 sm:px-6 sm:pt-6">
+        <ChartContainer config={chartConfig} className="aspect-auto h-[250px] w-full">
           <BarChart
             data={chartData}
             margin={{
@@ -180,22 +196,14 @@ export function BarGraph() {
             }}
           >
             <defs>
-              <linearGradient id='fillBar' x1='0' y1='0' x2='0' y2='1'>
-                <stop
-                  offset='0%'
-                  stopColor='var(--primary)'
-                  stopOpacity={0.8}
-                />
-                <stop
-                  offset='100%'
-                  stopColor='var(--primary)'
-                  stopOpacity={0.2}
-                />
+              <linearGradient id="fillBar" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="var(--primary)" stopOpacity={0.8} />
+                <stop offset="100%" stopColor="var(--primary)" stopOpacity={0.2} />
               </linearGradient>
             </defs>
             <CartesianGrid vertical={false} />
             <XAxis
-              dataKey='date'
+              dataKey="date"
               tickLine={false}
               axisLine={false}
               tickMargin={8}
@@ -212,8 +220,8 @@ export function BarGraph() {
               cursor={{ fill: 'var(--primary)', opacity: 0.1 }}
               content={
                 <ChartTooltipContent
-                  className='w-37.5'
-                  nameKey='views'
+                  className="w-[150px]"
+                  nameKey="views"
                   labelFormatter={(value) => {
                     return new Date(value).toLocaleDateString('en-US', {
                       month: 'short',
@@ -224,11 +232,7 @@ export function BarGraph() {
                 />
               }
             />
-            <Bar
-              dataKey={activeChart}
-              fill='url(#fillBar)'
-              radius={[4, 4, 0, 0]}
-            />
+            <Bar dataKey={activeChart} fill="url(#fillBar)" radius={[4, 4, 0, 0]} />
           </BarChart>
         </ChartContainer>
       </CardContent>

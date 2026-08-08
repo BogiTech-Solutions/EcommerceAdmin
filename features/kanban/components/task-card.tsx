@@ -1,11 +1,13 @@
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import { Task } from '../utils/store';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { cva } from 'class-variance-authority';
 import { IconGripVertical } from '@tabler/icons-react';
+import { cva } from 'class-variance-authority';
+
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
+
+import { Task } from '../utils/store';
 
 // export interface Task {
 //   id: UniqueIdentifier;
@@ -26,14 +28,7 @@ export interface TaskDragData {
 }
 
 export function TaskCard({ task, isOverlay }: TaskCardProps) {
-  const {
-    setNodeRef,
-    attributes,
-    listeners,
-    transform,
-    transition,
-    isDragging
-  } = useSortable({
+  const { setNodeRef, attributes, listeners, transform, transition, isDragging } = useSortable({
     id: task.id,
     data: {
       type: 'Task',
@@ -66,21 +61,21 @@ export function TaskCard({ task, isOverlay }: TaskCardProps) {
         dragging: isOverlay ? 'overlay' : isDragging ? 'over' : undefined
       })}
     >
-      <CardHeader className='space-between border-secondary relative flex flex-row border-b-2 px-3 py-3'>
+      <CardHeader className="space-between border-secondary relative flex flex-row border-b-2 px-3 py-3">
         <Button
           variant={'ghost'}
           {...attributes}
           {...listeners}
-          className='text-secondary-foreground/50 -ml-2 h-auto cursor-grab p-1'
+          className="text-secondary-foreground/50 -ml-2 h-auto cursor-grab p-1"
         >
-          <span className='sr-only'>Move task</span>
+          <span className="sr-only">Move task</span>
           <IconGripVertical />
         </Button>
-        <Badge variant={'outline'} className='ml-auto font-semibold'>
+        <Badge variant={'outline'} className="ml-auto font-semibold">
           Task
         </Badge>
       </CardHeader>
-      <CardContent className='px-3 pt-3 pb-6 text-left whitespace-pre-wrap'>
+      <CardContent className="px-3 pt-3 pb-6 text-left whitespace-pre-wrap">
         {task.title}
       </CardContent>
     </Card>

@@ -1,28 +1,19 @@
-import { useSyncExternalStore, useCallback } from 'react';
-
-const QUERY = '(max-width: 768px)';
+import { useEffect, useState } from 'react';
 
 export function useMediaQuery() {
-  // Subscribe to changes in the media query layout
-  const subscribe = useCallback((callback: () => void) => {
-    const mediaQuery = window.matchMedia(QUERY);
-    mediaQuery.addEventListener('change', callback);
-    return () => mediaQuery.removeEventListener('change', callback);
+  const [isOpen, setIsOpen] = useState(false);
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(max-width: 768px)');
+    setIsOpen(mediaQuery.matches);
+
+    const handler = (e: MediaQueryListEvent) => {
+      setIsOpen(e.matches);
+    };
+
+    mediaQuery.addEventListener('change', handler);
+    return () => mediaQuery.removeEventListener('change', handler);
   }, []);
-
-  // Fetch the instantaneous state directly from the DOM
-  const getSnapshot = useCallback(() => {
-    return window.matchMedia(QUERY).matches;
-  }, []);
-
-  // Use false as a placeholder value for Server-Side Rendering (SSR)
-  const getServerSnapshot = () => false;
-
-  const isOpen = useSyncExternalStore(
-    subscribe,
-    getSnapshot,
-    getServerSnapshot
-  );
 
   return { isOpen };
 }

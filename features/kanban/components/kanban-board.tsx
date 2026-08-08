@@ -1,8 +1,4 @@
 'use client';
-import { Fragment, useEffect, useMemo, useRef, useState } from 'react';
-import { createPortal } from 'react-dom';
-import { Task, useTaskStore } from '../utils/store';
-import { hasDraggableData } from '../utils';
 import {
   Announcements,
   DndContext,
@@ -17,44 +13,50 @@ import {
   type DragStartEvent
 } from '@dnd-kit/core';
 import { SortableContext, arrayMove } from '@dnd-kit/sortable';
+import { Fragment, useEffect, useMemo, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
+
+import { hasDraggableData } from '../utils';
 import type { Column } from './board-column';
 import { BoardColumn, BoardContainer } from './board-column';
 import NewSectionDialog from './new-section-dialog';
 import { TaskCard } from './task-card';
+import { Task, useTaskStore } from '../utils/store';
+// import { coordinateGetter } from "./multipleContainersKeyboardPreset";
 
-export type ColumnId = 'TODO' | 'IN_PROGRESS' | 'DONE';
+const defaultCols = [
+  {
+    id: 'TODO' as const,
+    title: 'Todo'
+  },
+  {
+    id: 'IN_PROGRESS' as const,
+    title: 'In progress'
+  },
+  {
+    id: 'DONE' as const,
+    title: 'Done'
+  }
+] satisfies Column[];
 
-interface UseTaskStoreState {
-  columns: Column[];
-  setCols: (columns: Column[]) => void;
-  tasks: Task[];
-  setTasks: (tasks: Task[]) => void;
-}
+export type ColumnId = (typeof defaultCols)[number]['id'];
 
 export function KanbanBoard() {
   // const [columns, setColumns] = useState<Column[]>(defaultCols);
-  const columns: Column[] = useTaskStore(
-    (state: UseTaskStoreState) => state.columns
-  );
-  const setColumns: (columns: Column[]) => void = useTaskStore(
-    (state: UseTaskStoreState) => state.setCols
-  );
-  const pickedUpTaskColumn = useRef<ColumnId>('TODO');
-  const columnsId = useMemo(
-    () => columns.map((col) => col.id as ColumnId),
-    [columns]
-  );
+  const columns = useTaskStore((state) => state.columns);
+  const setColumns = useTaskStore((state) => state.setCols);
+  const pickedUpTaskColumn = useRef<ColumnId | 'TODO' | 'IN_PROGRESS' | 'DONE'>('TODO');
+  const columnsId = useMemo(() => columns.map((col) => col.id), [columns]);
 
   // const [tasks, setTasks] = useState<Task[]>(initialTasks);
-  const tasks: Task[] = useTaskStore((state: UseTaskStoreState) => state.tasks);
-  const setTasks: (tasks: Task[]) => void = useTaskStore(
-    (state: UseTaskStoreState) => state.setTasks
-  );
+  const tasks = useTaskStore((state) => state.tasks);
+  const setTasks = useTaskStore((state) => state.setTasks);
   const [activeColumn, setActiveColumn] = useState<Column | null>(null);
+  const [isMounted, setIsMounted] = useState<boolean>(false);
 
   const [activeTask, setActiveTask] = useState<Task | null>(null);
 
-  const sensors: ReturnType<typeof useSensors> = useSensors(
+  const sensors = useSensors(
     useSensor(MouseSensor),
     useSensor(TouchSensor)
     // useSensor(KeyboardSensor, {
@@ -63,8 +65,13 @@ export function KanbanBoard() {
   );
 
   useEffect(() => {
+    setIsMounted(true);
+  }, [isMounted]);
+
+  useEffect(() => {
     useTaskStore.persist.rehydrate();
   }, []);
+  if (!isMounted) return;
 
   function getDraggingTaskData(taskId: UniqueIdentifier, columnId: ColumnId) {
     const tasksInColumn = tasks.filter((task) => task.status === columnId);
@@ -100,18 +107,12 @@ export function KanbanBoard() {
     onDragOver({ active, over }) {
       if (!hasDraggableData(active) || !hasDraggableData(over)) return;
 
-      if (
-        active.data.current?.type === 'Column' &&
-        over.data.current?.type === 'Column'
-      ) {
+      if (active.data.current?.type === 'Column' && over.data.current?.type === 'Column') {
         const overColumnIdx = columnsId.findIndex((id) => id === over.id);
         return `Column ${active.data.current.column.title} was moved over ${
           over.data.current.column.title
         } at position ${overColumnIdx + 1} of ${columnsId.length}`;
-      } else if (
-        active.data.current?.type === 'Task' &&
-        over.data.current?.type === 'Task'
-      ) {
+      } else if (active.data.current?.type === 'Task' && over.data.current?.type === 'Task') {
         const { tasksInColumn, taskPosition, column } = getDraggingTaskData(
           over.id,
           over.data.current.task.status
@@ -133,21 +134,13 @@ export function KanbanBoard() {
         pickedUpTaskColumn.current = 'TODO';
         return;
       }
-      if (
-        active.data.current?.type === 'Column' &&
-        over.data.current?.type === 'Column'
-      ) {
+      if (active.data.current?.type === 'Column' && over.data.current?.type === 'Column') {
         const overColumnPosition = columnsId.findIndex((id) => id === over.id);
 
         return `Column ${
           active.data.current.column.title
-        } was dropped into position ${overColumnPosition + 1} of ${
-          columnsId.length
-        }`;
-      } else if (
-        active.data.current?.type === 'Task' &&
-        over.data.current?.type === 'Task'
-      ) {
+        } was dropped into position ${overColumnPosition + 1} of ${columnsId.length}`;
+      } else if (active.data.current?.type === 'Task' && over.data.current?.type === 'Task') {
         const { tasksInColumn, taskPosition, column } = getDraggingTaskData(
           over.id,
           over.data.current.task.status
@@ -184,12 +177,9 @@ export function KanbanBoard() {
         <SortableContext items={columnsId}>
           {columns?.map((col, index) => (
             <Fragment key={col.id}>
-              <BoardColumn
-                column={col}
-                tasks={tasks.filter((task) => task.status === col.id)}
-              />
+              <BoardColumn column={col} tasks={tasks.filter((task) => task.status === col.id)} />
               {index === columns?.length - 1 && (
-                <div className='w-75'>
+                <div className="w-[300px]">
                   <NewSectionDialog />
                 </div>
               )}

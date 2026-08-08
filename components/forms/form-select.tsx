@@ -1,6 +1,7 @@
 'use client';
 
 import { FieldPath, FieldValues } from 'react-hook-form';
+
 import {
   FormControl,
   FormDescription,
@@ -50,14 +51,10 @@ function FormSelect<
           {label && (
             <FormLabel>
               {label}
-              {required && <span className='ml-1 text-red-500'>*</span>}
+              {required && <span className="ml-1 text-red-500">*</span>}
             </FormLabel>
           )}
-          <Select
-            onValueChange={field.onChange}
-            defaultValue={field.value}
-            disabled={disabled}
-          >
+          <Select onValueChange={field.onChange} defaultValue={field.value} disabled={disabled}>
             <FormControl>
               <SelectTrigger>
                 <SelectValue placeholder={placeholder} />
@@ -65,11 +62,7 @@ function FormSelect<
             </FormControl>
             <SelectContent>
               {options.map((option) => (
-                <SelectItem
-                  key={option.value}
-                  value={option.value}
-                  disabled={option.disabled}
-                >
+                <SelectItem key={option.value} value={option.value} disabled={option.disabled}>
                   {option.label}
                 </SelectItem>
               ))}

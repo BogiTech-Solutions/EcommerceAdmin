@@ -1,24 +1,22 @@
 'use client';
 
-import { useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
 import * as z from 'zod';
+
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
-import { FormInput } from './form-input';
-import { FormTextarea } from './form-textarea';
-import { FormSelect, type FormOption } from './form-select';
-import {
-  FormCheckboxGroup,
-  type CheckboxGroupOption
-} from './form-checkbox-group';
-import { FormRadioGroup, type RadioGroupOption } from './form-radio-group';
-import { FormSwitch } from './form-switch';
-import { FormSlider } from './form-slider';
-import { FormDatePicker } from './form-date-picker';
 import { FormCheckbox } from './form-checkbox';
+import { FormCheckboxGroup, type CheckboxGroupOption } from './form-checkbox-group';
+import { FormDatePicker } from './form-date-picker';
 import { FormFileUpload, type FileUploadConfig } from './form-file-upload';
+import { FormInput } from './form-input';
+import { FormRadioGroup, type RadioGroupOption } from './form-radio-group';
+import { FormSelect, type FormOption } from './form-select';
+import { FormSlider } from './form-slider';
+import { FormSwitch } from './form-switch';
+import { FormTextarea } from './form-textarea';
 
 // Demo form schema
 const demoFormSchema = z.object({
@@ -111,52 +109,46 @@ export default function DemoForm() {
     }
   });
 
-  // Safely watch form values for display
-  const formValues = useWatch({ control: form.control });
-
   const onSubmit = (data: DemoFormData) => {
     console.log('Form submitted:', data);
     alert('Form submitted successfully! Check console for data.');
   };
 
   return (
-    <div className='mx-auto max-w-2xl space-y-6 p-6'>
+    <div className="mx-auto max-w-2xl space-y-6 p-6">
       <Card>
         <CardHeader>
-          <CardTitle className='text-2xl font-bold'>
-            Reusable Form Components Demo
-          </CardTitle>
-          <p className='text-muted-foreground'>
-            See how these components reduce boilerplate from 15+ lines to just
-            5-8 lines per field
+          <CardTitle className="text-2xl font-bold">Reusable Form Components Demo</CardTitle>
+          <p className="text-muted-foreground">
+            See how these components reduce boilerplate from 15+ lines to just 5-8 lines per field
           </p>
         </CardHeader>
         <CardContent>
-          <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-6'>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             {/* Basic Inputs */}
-            <div className='grid grid-cols-1 gap-4 md:grid-cols-2'>
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <FormInput
                 control={form.control}
-                name='name'
-                label='Full Name'
-                placeholder='Enter your full name'
+                name="name"
+                label="Full Name"
+                placeholder="Enter your full name"
                 required
               />
 
               <FormInput
                 control={form.control}
-                name='email'
-                type='email'
-                label='Email Address'
-                placeholder='Enter your email'
+                name="email"
+                type="email"
+                label="Email Address"
+                placeholder="Enter your email"
                 required
               />
 
               <FormInput
                 control={form.control}
-                name='age'
-                type='number'
-                label='Age'
+                name="age"
+                type="number"
+                label="Age"
                 min={18}
                 max={100}
                 required
@@ -164,10 +156,10 @@ export default function DemoForm() {
 
               <FormInput
                 control={form.control}
-                name='password'
-                type='password'
-                label='Password'
-                placeholder='Enter your password'
+                name="password"
+                type="password"
+                label="Password"
+                placeholder="Enter your password"
                 required
               />
             </div>
@@ -175,10 +167,10 @@ export default function DemoForm() {
             {/* Textarea */}
             <FormTextarea
               control={form.control}
-              name='bio'
-              label='Bio'
-              placeholder='Tell us about yourself...'
-              description='A brief description about yourself'
+              name="bio"
+              label="Bio"
+              placeholder="Tell us about yourself..."
+              description="A brief description about yourself"
               config={{
                 maxLength: 500,
                 showCharCount: true,
@@ -190,9 +182,9 @@ export default function DemoForm() {
             {/* Select */}
             <FormSelect
               control={form.control}
-              name='country'
-              label='Country'
-              placeholder='Select your country'
+              name="country"
+              label="Country"
+              placeholder="Select your country"
               options={countryOptions}
               required
             />
@@ -200,9 +192,9 @@ export default function DemoForm() {
             {/* Checkbox Group */}
             <FormCheckboxGroup
               control={form.control}
-              name='interests'
-              label='Interests'
-              description='Select all that apply'
+              name="interests"
+              label="Interests"
+              description="Select all that apply"
               options={interestOptions}
               columns={3}
               showBadges={true}
@@ -212,27 +204,27 @@ export default function DemoForm() {
             {/* Radio Group */}
             <FormRadioGroup
               control={form.control}
-              name='gender'
-              label='Gender'
+              name="gender"
+              label="Gender"
               options={genderOptions}
-              orientation='horizontal'
+              orientation="horizontal"
               required
             />
 
             {/* Switch */}
             <FormSwitch
               control={form.control}
-              name='newsletter'
-              label='Subscribe to Newsletter'
-              description='Receive updates about new features and products'
+              name="newsletter"
+              label="Subscribe to Newsletter"
+              description="Receive updates about new features and products"
             />
 
             {/* Slider */}
             <FormSlider
               control={form.control}
-              name='rating'
-              label='Overall Rating'
-              description='Rate your experience (0-10)'
+              name="rating"
+              label="Overall Rating"
+              description="Rate your experience (0-10)"
               config={{
                 min: 0,
                 max: 10,
@@ -245,9 +237,9 @@ export default function DemoForm() {
             {/* Date Picker */}
             <FormDatePicker
               control={form.control}
-              name='birthDate'
-              label='Birth Date'
-              description='Your date of birth (optional)'
+              name="birthDate"
+              label="Birth Date"
+              description="Your date of birth (optional)"
               config={{
                 maxDate: new Date(),
                 placeholder: 'Select your birth date'
@@ -257,31 +249,31 @@ export default function DemoForm() {
             {/* Single Checkbox */}
             <FormCheckbox
               control={form.control}
-              name='terms'
-              checkboxLabel='I agree to the Terms and Conditions'
-              description='Please read and accept our terms'
+              name="terms"
+              checkboxLabel="I agree to the Terms and Conditions"
+              description="Please read and accept our terms"
               required
             />
 
             {/* File Upload */}
             <FormFileUpload
               control={form.control}
-              name='avatar'
-              label='Profile Picture'
-              description='Upload a profile picture (optional)'
+              name="avatar"
+              label="Profile Picture"
+              description="Upload a profile picture (optional)"
               config={fileUploadConfig}
             />
 
             {/* Submit Button */}
-            <div className='flex gap-4 pt-4'>
-              <Button type='submit' className='flex-1'>
+            <div className="flex gap-4 pt-4">
+              <Button type="submit" className="flex-1">
                 Submit Form
               </Button>
               <Button
-                type='button'
-                variant='outline'
+                type="button"
+                variant="outline"
                 onClick={() => form.reset()}
-                className='flex-1'
+                className="flex-1"
               >
                 Reset
               </Button>
@@ -296,8 +288,8 @@ export default function DemoForm() {
           <CardTitle>Form Data Preview</CardTitle>
         </CardHeader>
         <CardContent>
-          <pre className='bg-muted overflow-auto rounded-lg p-4 text-sm'>
-            {JSON.stringify(formValues, null, 2)}
+          <pre className="bg-muted overflow-auto rounded-lg p-4 text-sm">
+            {JSON.stringify(form.watch(), null, 2)}
           </pre>
         </CardContent>
       </Card>

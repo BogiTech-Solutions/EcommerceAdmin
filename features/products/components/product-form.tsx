@@ -1,34 +1,21 @@
 'use client';
 
-import { FormFileUpload } from '@/components/forms/form-file-upload';
-import { FormInput } from '@/components/forms/form-input';
-import { FormSelect } from '@/components/forms/form-select';
-import { FormTextarea } from '@/components/forms/form-textarea';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Form } from '@/components/ui/form';
-import { Product } from '@/constants/mock-api';
-import { Button } from '@/ui/button';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Product } from '@/constants/mock-api';
+
 const MAX_FILE_SIZE = 5000000;
-const ACCEPTED_IMAGE_TYPES = [
-  'image/jpeg',
-  'image/jpg',
-  'image/png',
-  'image/webp'
-];
+const ACCEPTED_IMAGE_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
 
 const formSchema = z.object({
   image: z
     .any()
     .refine((files) => files?.length == 1, 'Image is required.')
-    .refine(
-      (files) => files?.[0]?.size <= MAX_FILE_SIZE,
-      `Max file size is 5MB.`
-    )
+    .refine((files) => files?.[0]?.size <= MAX_FILE_SIZE, `Max file size is 5MB.`)
     .refine(
       (files) => ACCEPTED_IMAGE_TYPES.includes(files?.[0]?.type),
       '.jpg, .jpeg, .png and .webp files are accepted.'
@@ -71,14 +58,12 @@ export default function ProductForm({
   }
 
   return (
-    <Card className='mx-auto w-full'>
+    <Card className="mx-auto w-full">
       <CardHeader>
-        <CardTitle className='text-left text-2xl font-bold'>
-          {pageTitle}
-        </CardTitle>
+        <CardTitle className="text-left text-2xl font-bold">{pageTitle}</CardTitle>
       </CardHeader>
       <CardContent>
-        <Form
+        {/* <Form
           form={form}
           onSubmit={form.handleSubmit(onSubmit)}
           className='space-y-8'
@@ -155,7 +140,7 @@ export default function ProductForm({
           />
 
           <Button type='submit'>Add Product</Button>
-        </Form>
+        </Form> */}
       </CardContent>
     </Card>
   );

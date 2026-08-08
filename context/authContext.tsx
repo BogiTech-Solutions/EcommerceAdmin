@@ -1,13 +1,8 @@
 'use client';
+import React, { createContext, ReactNode, useContext, useState, useEffect } from 'react';
+
 import { API_BASE_URL } from '@/constants';
 import { User } from '@/types';
-import React, {
-  createContext,
-  ReactNode,
-  useContext,
-  useState,
-  useEffect
-} from 'react';
 
 // Define the shape of the AuthContext
 interface AuthContextType {
@@ -48,15 +43,12 @@ function AuthContextProvider({ children }: { children: ReactNode }) {
           });
           if (res.ok) {
             const data = await res.json();
-            setUser(
-              data.user || { userId: '', email: '', name: '', avatar: '' }
-            );
+            setUser(data.user || { userId: '', email: '', name: '', avatar: '' });
           } else {
             localStorage.removeItem('token');
             setUser(null);
           }
-        } catch (err) {
-          console.log(err);
+        } catch (error) {
           localStorage.removeItem('token');
           setUser(null);
         }
@@ -72,17 +64,14 @@ function AuthContextProvider({ children }: { children: ReactNode }) {
       const res = await fetch(`${API_BASE_URL}/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password, device_name: 'Windows 10' }) // Shorthand syntax applied
+        body: JSON.stringify({ email: email, password: password, device_name: 'Windows 10' })
       });
 
       const { token } = await res.json();
       if (res.ok) {
         await fetch(`${API_BASE_URL}/users/me`, {
           method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`
-          }
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
         })
           .then((res) => res.json())
           .then((user) => {
@@ -92,11 +81,8 @@ function AuthContextProvider({ children }: { children: ReactNode }) {
       } else {
         throw new Error('Login failed');
       }
-    } catch (error: unknown) {
-      if (error instanceof Error) {
-        throw new Error(error.message);
-      }
-      throw new Error('Login failed');
+    } catch (error: any) {
+      throw new Error(error.message || 'Login failed');
     }
   };
 
@@ -114,11 +100,8 @@ function AuthContextProvider({ children }: { children: ReactNode }) {
       } else {
         throw new Error(data.message || 'Registration failed');
       }
-    } catch (error: unknown) {
-      if (error instanceof Error) {
-        throw new Error(error.message);
-      }
-      throw new Error('Registration failed');
+    } catch (error: any) {
+      throw new Error(error.message || 'Registration failed');
     }
   };
 
@@ -140,14 +123,7 @@ function AuthContextProvider({ children }: { children: ReactNode }) {
 
   return (
     <AuthContext.Provider
-      value={{
-        user,
-        login,
-        register,
-        logout,
-        isAuthenticated: !!user,
-        loading
-      }}
+      value={{ user, login, register, logout, isAuthenticated: !!user, loading }}
     >
       {children}
     </AuthContext.Provider>

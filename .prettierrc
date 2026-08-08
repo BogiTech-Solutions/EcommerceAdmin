@@ -3,8 +3,9 @@
   "singleQuote": true,
   "tabWidth": 2,
   "trailingComma": "none",
-  "printWidth": 80,
+  "printWidth": 100,
   "bracketSpacing": true,
-  "jsxSingleQuote": true,
+  "arrowParens": "always",
+  "endOfLine": "lf",
   "plugins": ["prettier-plugin-tailwindcss"]
 }
