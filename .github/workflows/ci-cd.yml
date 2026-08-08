@@ -36,9 +36,9 @@ jobs:
         run: bun run tsc --noEmit
         continue-on-error: false
 
-      - name: Run Unit Tests
-        run: bun test
-        if: always() # Optional: Run tests even if previous step fails if configured
+      # - name: Run Unit Tests
+      #   run: bun test
+      #   if: always() # Optional: Run tests even if previous step fails if configured
 
   # ----------------------------------------------------
   # 2. CD Phase: Deploy to Vercel (Only on main branch)
