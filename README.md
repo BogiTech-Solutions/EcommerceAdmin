@@ -47,16 +47,19 @@ The project follows a **Feature-Driven & Modular Architecture** to ensure clean 
 ## ✨ Features
 
 - **🔒 Authentication & Security:**
+
   - Secure JWT authentication flow connected to Spring Boot backend (`/api/v1/auth/login`).
   - Persistent login state via HTTP cookies / local storage using `AuthContext`.
   - Role-Based Access Control (RBAC) ensuring only `ADMIN` users can access management routes.
 
 - **👥 User Management (`/features/users`):**
+
   - Paginated user list with sorting and filtering.
   - Role updating (`USER` ↔ `ADMIN`).
   - Account status toggle (`enabled` / `disabled`).
 
 - **📦 Catalog & Inventory (`/features/products`):**
+
   - Category and product CRUD operations.
   - Local file asset preview and upload handlers.
 
@@ -83,18 +86,21 @@ Also, ensure the **Spring Boot API** backend is running locally at `http://local
 ### Installation & Local Setup
 
 1. **Clone the repository:**
+
    ```bash
    git clone https://github.com/your-username/ecommerce-admin-dashboard.git
    cd ecommerce-admin-dashboard
    ```
 
 2. **Install dependencies using Bun:**
+
    ```bash
    bun install
    ```
 
 3. **Configure Environment Variables:**
    Create a `.env.local` file in the root directory:
+
    ```env
    NEXT_PUBLIC_API_BASE_URL=http://localhost:8080/api/v1
    ```
@@ -124,7 +130,8 @@ To add additional components from shadcn/ui, run:
 bun x --bun shadcn@latest add <component-name>
 ```
 
-*Example:*
+_Example:_
+
 ```bash
 bun x --bun shadcn@latest add table dialog dropdown-menu
 ```
@@ -133,10 +140,10 @@ bun x --bun shadcn@latest add table dialog dropdown-menu
 
 ## 🤝 REST API Integration Reference
 
-| Module | HTTP Method | API Endpoint | Description |
-|---|---|---|---|
-| **Auth** | `POST` | `/api/v1/auth/login` | Authenticate Admin User |
-| **Profile** | `GET` | `/api/v1/users/me` | Fetch Current Admin Profile |
-| **Users** | `GET` | `/api/v1/users` | List all users (Paginated) |
-| **User Role** | `PATCH` | `/api/v1/users/{id}/role` | Update user role |
-| **User Status** | `PATCH` | `/api/v1/users/{id}/status` | Toggle user enabled flag |
+| Module          | HTTP Method | API Endpoint                | Description                 |
+| --------------- | ----------- | --------------------------- | --------------------------- |
+| **Auth**        | `POST`      | `/api/v1/auth/login`        | Authenticate Admin User     |
+| **Profile**     | `GET`       | `/api/v1/users/me`          | Fetch Current Admin Profile |
+| **Users**       | `GET`       | `/api/v1/users`             | List all users (Paginated)  |
+| **User Role**   | `PATCH`     | `/api/v1/users/{id}/role`   | Update user role            |
+| **User Status** | `PATCH`     | `/api/v1/users/{id}/status` | Toggle user enabled flag    |
