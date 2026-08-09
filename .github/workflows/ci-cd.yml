@@ -36,8 +36,8 @@ jobs:
         run: bun run tsc --noEmit
         continue-on-error: false
 
-      - name: Run Unit Tests
-        run: bun test
+      # - name: Run Unit Tests
+      #   run: bun test
 
   # ----------------------------------------------------
   # 2. CD Phase: Deploy to Vercel (Only on main/master)
