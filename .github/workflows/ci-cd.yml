@@ -26,7 +26,7 @@ jobs:
       # Remove cached/stale .vercel directory before pulling
       - name: Clean stale Vercel state
         run: rm -rf .vercel
-        
+
       - name: Install dependencies
         run: bun install --frozen-lockfile
 
@@ -69,7 +69,11 @@ jobs:
       # Step 1: Force remove any cached or stale .vercel directory
       - name: Remove stale Vercel cache
         run: rm -rf .vercel
-
+      # -------------------------------------------------------------
+      # ADD THIS STEP HERE TO REMOVE THE .vercel FOLDER IN GITHUB ACTIONS
+      # -------------------------------------------------------------
+      - name: Delete .vercel directory
+        run: rm -rf .vercel
       # Step 2: Pull production environment passing token explicitly
       - name: Pull Vercel Environment Information
         run: bunx vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
