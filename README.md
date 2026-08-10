@@ -88,7 +88,7 @@ Also, ensure the **Spring Boot API** backend is running locally at `http://local
 1. **Clone the repository:**
 
    ```bash
-   git clone https://github.com/your-username/ecommerce-admin-dashboard.git
+   git clone git@github.com:BogiTech-Solutions/EcommerceAdmin.git
    cd ecommerce-admin-dashboard
    ```
 
@@ -119,31 +119,3 @@ Also, ensure the **Spring Boot API** backend is running locally at `http://local
 - `bun run build`: Builds the production-ready bundle.
 - `bun start`: Starts the production Next.js server.
 - `bun run lint`: Runs ESLint for code formatting and quality checks.
-
----
-
-## 🎨 Adding New shadcn/ui Components
-
-To add additional components from shadcn/ui, run:
-
-```bash
-bun x --bun shadcn@latest add <component-name>
-```
-
-_Example:_
-
-```bash
-bun x --bun shadcn@latest add table dialog dropdown-menu
-```
-
----
-
-## 🤝 REST API Integration Reference
-
-| Module          | HTTP Method | API Endpoint                | Description                 |
-| --------------- | ----------- | --------------------------- | --------------------------- |
-| **Auth**        | `POST`      | `/api/v1/auth/login`        | Authenticate Admin User     |
-| **Profile**     | `GET`       | `/api/v1/users/me`          | Fetch Current Admin Profile |
-| **Users**       | `GET`       | `/api/v1/users`             | List all users (Paginated)  |
-| **User Role**   | `PATCH`     | `/api/v1/users/{id}/role`   | Update user role            |
-| **User Status** | `PATCH`     | `/api/v1/users/{id}/status` | Toggle user enabled flag    |
