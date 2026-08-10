@@ -289,7 +289,7 @@ export default function SettingsPage() {
                 <Input
                   id="apiKey"
                   readOnly
-                  value={process.env.STRIPE_SECRATE}
+                  value={process.env.NEXT_PUBLIC_STRIPE_SECRATE}
                   className="bg-muted font-mono text-sm"
                 />
               </div>
@@ -301,7 +301,7 @@ export default function SettingsPage() {
                     id="secretKey"
                     type="password"
                     readOnly
-                    value={process.env.STRIPE_PASSWORD}
+                    value={process.env.NEXT_PUBLIC_STRIPE_PASSWORD}
                     className="bg-muted font-mono text-sm"
                   />
                   <Button variant="outline">Roll Key</Button>
