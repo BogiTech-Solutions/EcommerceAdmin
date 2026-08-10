@@ -83,3 +83,32 @@ export interface UserFormData {
   role: UserRole;
   status: UserStatus;
 }
+
+// types/ad.ts
+export type AdPlacement = 'homepage_hero' | 'sidebar' | 'popup' | 'footer';
+export type AdStatus = 'active' | 'scheduled' | 'paused' | 'expired';
+
+export interface Advertisement {
+  id: string;
+  title: string;
+  placement: AdPlacement;
+  imageUrl: string;
+  targetUrl: string;
+  status: AdStatus;
+  startDate: string;
+  endDate: string;
+  impressions: number;
+  clicks: number;
+  ctr: number; // Click Through Rate percentage
+  createdAt: string;
+}
+
+export interface AdFormData {
+  title: string;
+  placement: AdPlacement;
+  imageUrl: string;
+  targetUrl: string;
+  status: AdStatus;
+  startDate: string;
+  endDate: string;
+}
