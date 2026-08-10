@@ -39,3 +39,24 @@ export interface User {
 export type MainNavItem = NavItemWithOptionalChildren;
 
 export type SidebarNavItem = NavItemWithChildren;
+
+// types/category.ts
+export interface Category {
+  id: string;
+  name: string;
+  slug: string;
+  description?: string;
+  parentId?: string | null;
+  parentName?: string;
+  productCount: number;
+  status: 'active' | 'archived';
+  createdAt: string;
+}
+
+export interface CategoryFormData {
+  name: string;
+  slug: string;
+  parentId?: string;
+  description?: string;
+  status: 'active' | 'archived';
+}
