@@ -112,3 +112,32 @@ export interface AdFormData {
   startDate: string;
   endDate: string;
 }
+
+// types/order.ts
+export type OrderStatus = 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
+export type PaymentStatus = 'paid' | 'pending' | 'refunded' | 'failed';
+
+export interface OrderItem {
+  id: string;
+  productName: string;
+  sku: string;
+  price: number;
+  quantity: number;
+  imageUrl?: string;
+}
+
+export interface Order {
+  id: string;
+  customerName: string;
+  customerEmail: string;
+  shippingAddress: string;
+  paymentMethod: string;
+  paymentStatus: PaymentStatus;
+  orderStatus: OrderStatus;
+  items: OrderItem[];
+  subtotal: number;
+  tax: number;
+  shippingFee: number;
+  totalAmount: number;
+  createdAt: string;
+}
