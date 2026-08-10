@@ -66,18 +66,16 @@ function AuthContextProvider({ children }: { children: ReactNode }) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: email, password: password, device_name: 'Windows 10' })
       });
-
       const { token } = await res.json();
       if (res.ok) {
-        await fetch(`${API_BASE_URL}/users/me`, {
+        const userResponse = await fetch(`${API_BASE_URL}/users/me`, {
           method: 'GET',
           headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
-        })
-          .then((res) => res.json())
-          .then((user) => {
-            localStorage.setItem('token', token);
-            setUser(user);
-          });
+        });
+
+        const user = await userResponse.json();
+        setUser(user);
+        localStorage.setItem('token', token);
       } else {
         throw new Error('Login failed');
       }

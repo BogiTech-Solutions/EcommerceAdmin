@@ -50,9 +50,7 @@ export default function Page({ className, searchParams, ...props }: PageProps) {
     try {
       setError('');
       await login(data.email, data.password);
-      if (user) {
-        router.push('/dashboard');
-      }
+      router.push('/dashboard');
     } catch (err: any) {
       setError(err.message || 'Login failed');
     }
