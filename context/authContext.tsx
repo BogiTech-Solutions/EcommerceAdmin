@@ -33,30 +33,6 @@ function AuthContextProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   // Check for existing token on mount to restore session
-  useEffect(() => {
-    const initializeAuth = async () => {
-      const token = localStorage.getItem('token');
-      if (token) {
-        try {
-          const res = await fetch(`${API_BASE_URL}/api/protected`, {
-            headers: { Authorization: `Bearer ${token}` }
-          });
-          if (res.ok) {
-            const data = await res.json();
-            setUser(data.user || { userId: '', email: '', name: '', avatar: '' });
-          } else {
-            localStorage.removeItem('token');
-            setUser(null);
-          }
-        } catch (error) {
-          localStorage.removeItem('token');
-          setUser(null);
-        }
-      }
-      setLoading(false);
-    };
-    initializeAuth();
-  }, []);
 
   // Login function
   const login = async (email: string, password: string) => {
@@ -74,8 +50,8 @@ function AuthContextProvider({ children }: { children: ReactNode }) {
         });
 
         const user = await userResponse.json();
-        setUser(user);
         localStorage.setItem('token', token);
+        setUser(user);
       } else {
         throw new Error('Login failed');
       }
@@ -118,6 +94,26 @@ function AuthContextProvider({ children }: { children: ReactNode }) {
       setUser(null);
     }
   };
+
+  useEffect(() => {
+    const initializeAuth = async () => {
+      const token = localStorage.getItem('token');
+      if (token) {
+        try {
+          const userResponse = await fetch(`${API_BASE_URL}/users/me`, {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+          });
+          const user = await userResponse.json();
+          setUser(user);
+        } catch (error) {
+          setUser(null);
+        }
+      }
+      setLoading(false);
+    };
+    initializeAuth();
+  }, []);
 
   return (
     <AuthContext.Provider
