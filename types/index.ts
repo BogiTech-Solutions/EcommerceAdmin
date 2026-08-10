@@ -60,3 +60,26 @@ export interface CategoryFormData {
   description?: string;
   status: 'active' | 'archived';
 }
+
+// types/user.ts
+export type UserRole = 'Admin' | 'Customer' | 'Vendor';
+export type UserStatus = 'Active' | 'Suspended' | 'Pending';
+
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+  avatarUrl?: string;
+  role: UserRole;
+  status: UserStatus;
+  totalOrders: number;
+  totalSpent: number;
+  createdAt: string;
+}
+
+export interface UserFormData {
+  name: string;
+  email: string;
+  role: UserRole;
+  status: UserStatus;
+}
