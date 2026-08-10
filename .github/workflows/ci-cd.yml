@@ -7,9 +7,7 @@ on:
     branches: [main, master]
 
 jobs:
-  # ----------------------------------------------------
   # 1. CI Phase: Quality checks and testing
-  # ----------------------------------------------------
   quality-and-test:
     name: Code Quality & Tests
     runs-on: ubuntu-latest
@@ -22,10 +20,6 @@ jobs:
         uses: oven-sh/setup-bun@v2
         with:
           bun-version: latest
-
-      # Remove cached/stale .vercel directory before pulling
-      - name: Clean stale Vercel state
-        run: rm -rf .vercel
 
       - name: Install dependencies
         run: bun install --frozen-lockfile
@@ -40,17 +34,15 @@ jobs:
         run: bun run tsc --noEmit
         continue-on-error: false
 
-      # - name: Run Unit Tests
-      #   run: bun test
-
-  # ----------------------------------------------------
   # 2. CD Phase: Deploy to Vercel (Only on main/master)
-  # ----------------------------------------------------
   deploy:
     name: Deploy to Production
     needs: quality-and-test
     if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
     runs-on: ubuntu-latest
+    
+    # CRITICAL: Match this to your GitHub Repository Environment if secrets are scoped
+    environment: production 
 
     env:
       VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
@@ -66,22 +58,13 @@ jobs:
         with:
           bun-version: latest
 
-      # Step 1: Force remove any cached or stale .vercel directory
-      - name: Remove stale Vercel cache
-        run: rm -rf .vercel
-      # -------------------------------------------------------------
-      # ADD THIS STEP HERE TO REMOVE THE .vercel FOLDER IN GITHUB ACTIONS
-      # -------------------------------------------------------------
-      - name: Delete .vercel directory
-        run: rm -rf .vercel
-      # Step 2: Pull production environment passing token explicitly
+      # Explicitly pass the --scope flag to force match your Org ID
+      # Explicitly pass the --token flag to bypass automated context deduction bugs
       - name: Pull Vercel Environment Information
-        run: bunx vercel pull --yes --environment=production
+        run: bunx vercel pull --yes --environment=production --scope=${{ secrets.VERCEL_ORG_ID }} --token=${{ secrets.VERCEL_TOKEN }}
 
-      # Step 3: Build artifacts
       - name: Build Project Artifacts
-        run: bunx vercel build --prod
+        run: bunx vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
 
-      # Step 4: Deploy prebuilt artifacts
       - name: Deploy Project Artifacts to Vercel
-        run: bunx vercel deploy --prebuilt --prod
+        run: bunx vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
