@@ -16,10 +16,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       <SidebarProvider defaultOpen={true}>
         <AppSidebar />
         <SidebarInset>
-          <Header />
-          {/* page main content */}
-          {children}
-          {/* page main content ends */}
+          {/* Main Content Area - allows vertical scrolling */}
+          <main className="flex-1 overflow-y-auto">
+            <Header />
+            {children}
+          </main>
         </SidebarInset>
       </SidebarProvider>
     </KBar>
