@@ -63,11 +63,10 @@ export default function ProfilePage() {
     formState: { errors: profileErrors, isDirty: isProfileDirty }
   } = useForm<ProfileFormData>({
     defaultValues: {
-      firstName: user?.name?.split(' ')[0] || 'John',
-      lastName: user?.name?.split(' ')[1] || 'Doe',
+      firstName: user?.firstName || 'John',
+      lastName: user?.lastName || 'Doe',
       email: user?.email || 'admin@ecommerce.com',
-      phone: '+1 (555) 000-1234',
-      role: 'Super Administrator',
+      role: user?.role,
       bio: 'Head of E-Commerce operations and system administration.'
     }
   });
@@ -127,9 +126,9 @@ export default function ProfilePage() {
             <div className="flex flex-col items-center gap-4 sm:flex-row">
               <div className="group relative">
                 <Avatar className="border-background h-20 w-20 border-2 shadow-md">
-                  <AvatarImage src={user?.avatar} alt={user?.name || 'User Avatar'} />
+                  <AvatarImage src={user?.avator} alt={user?.firstName || 'User Avatar'} />
                   <AvatarFallback className="text-xl font-bold">
-                    {user?.name ? user.name.slice(0, 2).toUpperCase() : 'AD'}
+                    {user?.firstName ? user.firstName.slice(0, 2).toUpperCase() : 'AD'}
                   </AvatarFallback>
                 </Avatar>
                 <button
@@ -143,7 +142,7 @@ export default function ProfilePage() {
 
               <div className="space-y-1 text-center sm:text-left">
                 <div className="flex items-center justify-center gap-2 sm:justify-start">
-                  <h3 className="text-xl font-semibold">{user?.name || 'Admin User'}</h3>
+                  <h3 className="text-xl font-semibold">{user?.firstName || 'Admin User'}</h3>
                   <Badge variant="secondary" className="gap-1 font-normal">
                     <IconShieldCheck className="h-3.5 w-3.5 text-emerald-500" />
                     Verified
@@ -194,6 +193,7 @@ export default function ProfilePage() {
                     <Label htmlFor="firstName">First Name</Label>
                     <Input
                       id="firstName"
+                      value={user?.firstName}
                       {...registerProfile('firstName', { required: 'First name is required' })}
                     />
                     {profileErrors.firstName && (
@@ -205,6 +205,7 @@ export default function ProfilePage() {
                     <Label htmlFor="lastName">Last Name</Label>
                     <Input
                       id="lastName"
+                      value={user?.lastName}
                       {...registerProfile('lastName', { required: 'Last name is required' })}
                     />
                     {profileErrors.lastName && (
@@ -219,6 +220,7 @@ export default function ProfilePage() {
                     <Input
                       id="email"
                       type="email"
+                      value={user?.email}
                       {...registerProfile('email', { required: 'Email address is required' })}
                     />
                     {profileErrors.email && (
@@ -228,7 +230,7 @@ export default function ProfilePage() {
 
                   <div className="space-y-2">
                     <Label htmlFor="phone">Phone Number</Label>
-                    <Input id="phone" {...registerProfile('phone')} />
+                    <Input value={user?.phone} id="phone" {...registerProfile('phone')} />
                   </div>
                 </div>
 

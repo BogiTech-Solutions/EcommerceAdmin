@@ -30,12 +30,16 @@ export interface FooterItem {
   }[];
 }
 export interface User {
-  userId: string;
-  name: string;
+  avator: string;
+  createdAt: string;
   email: string;
-  avatar: string;
+  enabled: boolean;
+  firstName: string;
+  id: number;
+  lastName: string;
+  phone: string;
+  role: string;
 }
-
 export type MainNavItem = NavItemWithOptionalChildren;
 
 export type SidebarNavItem = NavItemWithChildren;
@@ -64,18 +68,6 @@ export interface CategoryFormData {
 // types/user.ts
 export type UserRole = 'Admin' | 'Customer' | 'Vendor';
 export type UserStatus = 'Active' | 'Suspended' | 'Pending';
-
-export interface User {
-  id: string;
-  name: string;
-  email: string;
-  avatarUrl?: string;
-  role: UserRole;
-  status: UserStatus;
-  totalOrders: number;
-  totalSpent: number;
-  createdAt: string;
-}
 
 export interface UserFormData {
   name: string;
