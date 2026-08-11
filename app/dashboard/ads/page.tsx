@@ -263,7 +263,7 @@ export default function AdsPage() {
   };
 
   return (
-    <div className="flex-1 space-y-6 p-6 md:p-8">
+    <>
       {/* Header */}
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
@@ -632,6 +632,6 @@ export default function AdsPage() {
           </form>
         </DialogContent>
       </Dialog>
-    </div>
+    </>
   );
 }

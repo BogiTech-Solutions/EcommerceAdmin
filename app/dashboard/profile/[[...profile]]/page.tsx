@@ -111,7 +111,7 @@ export default function ProfilePage() {
   };
 
   return (
-    <div className="h-full max-h-screen flex-1 space-y-6 overflow-y-auto p-6 md:p-8">
+    <>
       {/* Page Header */}
       <div className="flex flex-col gap-2">
         <h2 className="text-3xl font-bold tracking-tight">Account Profile</h2>
@@ -394,6 +394,6 @@ export default function ProfilePage() {
           </Card>
         </TabsContent>
       </Tabs>
-    </div>
+    </>
   );
 }
