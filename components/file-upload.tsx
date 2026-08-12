@@ -1,7 +1,7 @@
 'use client';
 
 import { UploadCloud, FileIcon, XIcon, AlertCircle, ImageIcon } from 'lucide-react';
-import * as React from 'react';
+import { HTMLAttributes, useCallback, useEffect, useState } from 'react';
 import { useDropzone, type DropzoneOptions, type FileRejection } from 'react-dropzone';
 
 import { Button } from '@/components/ui/button';
@@ -9,8 +9,8 @@ import { Progress } from '@/components/ui/progress';
 import { cn } from '@/lib/utils';
 
 interface SingleFileUploaderProps
-  extends Omit<React.HTMLAttributes<HTMLDivElement>, 'value' | 'onChange'> {
-  value?: File | null;
+  extends Omit<HTMLAttributes<HTMLDivElement>, 'value' | 'onChange'> {
+  value: File | string;
   onValueChange?: (file: File | null) => void;
   dropzoneOptions?: DropzoneOptions;
   maxSize?: number; // in bytes
@@ -18,7 +18,7 @@ interface SingleFileUploaderProps
 }
 
 export function SingleFileUploader({
-  value = null,
+  value,
   onValueChange,
   dropzoneOptions,
   maxSize = 1024 * 1024 * 5, // Default 5MB
@@ -28,26 +28,33 @@ export function SingleFileUploader({
   className,
   ...props
 }: SingleFileUploaderProps) {
-  const [file, setFile] = React.useState<File | null>(value);
-  const [progress, setProgress] = React.useState<number>(0);
-  const [error, setError] = React.useState<string | null>(null);
-  const [previewUrl, setPreviewUrl] = React.useState<string | null>(null);
+  const [file, setFile] = useState<File | string>(value);
+  const [progress, setProgress] = useState<number>(100); // Default to 100% for existing images
+  const [error, setError] = useState<string | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
   // Synchronize internal state with external controlled value
-  React.useEffect(() => {
+  useEffect(() => {
     setFile(value);
+
     if (!value) {
       setPreviewUrl(null);
       setProgress(0);
       setError(null);
-    } else if (value.type.startsWith('image/')) {
+    } else if (typeof value === 'string') {
+      // Handle string URL passed as default value (e.g. from existing category)
+      setPreviewUrl(value);
+      setProgress(100);
+      setError(null);
+    } else if (value instanceof File && value.type.startsWith('image/')) {
+      // Handle newly selected File object
       const url = URL.createObjectURL(value);
       setPreviewUrl(url);
       return () => URL.revokeObjectURL(url);
     }
   }, [value]);
 
-  const simulateUpload = React.useCallback(() => {
+  const simulateUpload = useCallback(() => {
     setProgress(0);
     let currentProgress = 0;
     const interval = setInterval(() => {
@@ -60,7 +67,7 @@ export function SingleFileUploader({
     }, 150);
   }, []);
 
-  const onDrop = React.useCallback(
+  const onDrop = useCallback(
     (acceptedFiles: File[], rejectedFiles: FileRejection[]) => {
       setError(null);
 
@@ -84,17 +91,17 @@ export function SingleFileUploader({
         setPreviewUrl(null);
       }
 
-      // Simulate upload progress
+      // Simulate upload progress for new files
       simulateUpload();
     },
     [onValueChange, simulateUpload]
   );
 
   const removeFile = () => {
-    if (previewUrl) {
+    if (previewUrl && file instanceof File) {
       URL.revokeObjectURL(previewUrl);
     }
-    setFile(null);
+    setFile(value || '');
     setPreviewUrl(null);
     setProgress(0);
     setError(null);
@@ -110,7 +117,21 @@ export function SingleFileUploader({
     ...dropzoneOptions
   });
 
-  const isImage = file?.type.startsWith('image/');
+  // Determine if current item is an image
+  const isImage = Boolean(
+    previewUrl ||
+      (typeof file === 'string' && file.length > 0) ||
+      (file instanceof File && file.type.startsWith('image/'))
+  );
+
+  // Helper to resolve display name
+  const getFileName = () => {
+    if (file instanceof File) return file.name;
+    if (typeof file === 'string' && file) {
+      return file.split('/').pop() || 'Existing Image';
+    }
+    return 'Uploaded File';
+  };
 
   return (
     <div className={cn('w-full space-y-3', className)} {...props}>
@@ -118,7 +139,7 @@ export function SingleFileUploader({
         <div
           {...getRootProps()}
           className={cn(
-            'text-muted-foreground bg-background hover:bg-muted/50 border-muted-foreground/20 flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed p-2 transition-colors duration-200 ease-in-out',
+            'text-muted-foreground bg-background hover:bg-muted/50 border-muted-foreground/20 flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed p-4 transition-colors duration-200 ease-in-out',
             isDragActive && 'border-primary bg-muted/50 text-foreground',
             error && 'border-destructive/50 bg-destructive/5'
           )}
@@ -126,61 +147,68 @@ export function SingleFileUploader({
           <input {...getInputProps()} />
           <div
             className={cn(
-              'bg-muted mb-3 rounded-full p-3',
+              'bg-muted mb-2 rounded-full p-2.5',
               error && 'bg-destructive/10 text-destructive'
             )}
           >
             {error ? (
-              <AlertCircle className="h-6 w-6" />
+              <AlertCircle className="h-5 w-5" />
             ) : (
-              <UploadCloud className="text-muted-foreground h-6 w-6" />
+              <UploadCloud className="text-muted-foreground h-5 w-5" />
             )}
           </div>
-          <p className="text-center text-sm font-medium">
+          <p className="text-center text-xs font-medium">
             <span className="text-primary font-semibold">Click to upload</span> or drag and drop
           </p>
-          <p className="text-muted-foreground mt-1 text-xs">
-            Single file up to {Math.round(maxSize / (1024 * 1024))}MB.
+          <p className="text-muted-foreground mt-0.5 text-[11px]">
+            Max size: {Math.round(maxSize / (1024 * 1024))}MB
           </p>
-          {error && <p className="text-destructive mt-2 text-xs font-medium">{error}</p>}
+          {error && <p className="text-destructive mt-1.5 text-xs font-medium">{error}</p>}
         </div>
       ) : (
-        <div className="bg-background relative space-y-3 rounded-xl p-1">
-          <div className="flex flex-col items-center justify-between">
-            <div className="relative flex min-w-0 flex-1 flex-col items-center space-x-3">
-              {/* Image Thumbnail or File Icon */}
-              {isImage && previewUrl ? (
-                <div className="bg-muted h-full w-full shrink-0 overflow-hidden rounded-lg border">
-                  <img src={previewUrl} alt={file.name} className="h-full w-full object-cover" />
-                </div>
-              ) : (
-                <div className="bg-muted shrink-0 rounded-lg p-3">
-                  {isImage ? (
-                    <ImageIcon className="text-muted-foreground h-6 w-6" />
-                  ) : (
-                    <FileIcon className="text-muted-foreground h-6 w-6" />
-                  )}
-                </div>
+        <div className="bg-background border-muted relative flex items-center justify-between rounded-xl border p-2 shadow-sm">
+          <div className="flex h-28 min-w-0 items-center space-x-3">
+            {/* Image Thumbnail or File Icon */}
+            {isImage && previewUrl ? (
+              <div className="bg-muted h-12 w-12 shrink-0 overflow-hidden rounded-lg border">
+                <img src={previewUrl} alt={getFileName()} className="h-full w-full object-cover" />
+              </div>
+            ) : (
+              <div className="bg-muted shrink-0 rounded-lg p-2.5">
+                {isImage ? (
+                  <ImageIcon className="text-muted-foreground h-5 w-5" />
+                ) : (
+                  <FileIcon className="text-muted-foreground h-5 w-5" />
+                )}
+              </div>
+            )}
+
+            {/* File Info */}
+            <div className="min-w-0 flex-1">
+              <p className="text-foreground truncate text-xs font-medium">{getFileName()}</p>
+              {file instanceof File && (
+                <p className="text-muted-foreground text-[11px]">
+                  {(file.size / 1024).toFixed(1)} KB
+                </p>
               )}
             </div>
-
-            {/* Remove button */}
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              className="text-muted-foreground hover:text-destructive h-8 w-8 shrink-0"
-              onClick={removeFile}
-            >
-              <XIcon className="h-4 w-4" />
-            </Button>
           </div>
 
-          {/* Progress Bar */}
+          {/* Remove Button */}
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            className="text-muted-foreground hover:text-destructive h-7 w-7 shrink-0"
+            onClick={removeFile}
+          >
+            <XIcon className="h-4 w-4" />
+          </Button>
+
+          {/* Upload Progress Bar (Only visible while simulating new file upload) */}
           {progress < 100 && (
-            <div className="space-y-1">
+            <div className="absolute inset-x-0 -bottom-1 px-1">
               <Progress value={progress} className="h-1 w-full" />
-              <p className="text-muted-foreground text-right text-[10px]">{progress}%</p>
             </div>
           )}
         </div>

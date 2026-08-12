@@ -7,7 +7,6 @@ import {
   IconTrash,
   IconDotsVertical,
   IconCategory,
-  IconFolder,
   IconLoader2
 } from '@tabler/icons-react';
 import React, { useCallback, useEffect, useState } from 'react';
@@ -16,7 +15,6 @@ import { toast } from 'sonner';
 
 // UI Components
 import { SingleFileUploader } from '@/components/file-upload';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import {
@@ -60,73 +58,72 @@ interface Category {
   id: string;
   name: string;
   slug: string;
-  description?: string;
-  parentId?: string | null;
-  parentName?: string;
+  thumbnail: string;
+  description: string;
   productCount: number;
   status: string;
   createdAt: string;
-  file?: File | null;
+  file?: File | string;
 }
 
 // Mock Initial Data
-const INITIAL_CATEGORIES: Category[] = [
-  {
-    id: 'cat-1',
-    name: 'Electronics',
-    slug: 'electronics',
-    description: 'Gadgets, devices, and electronic accessories.',
-    parentId: null,
-    productCount: 142,
-    status: 'active',
-    createdAt: '2024-01-15'
-  },
-  {
-    id: 'cat-2',
-    name: 'Smartphones',
-    slug: 'smartphones',
-    description: 'iOS and Android smartphones.',
-    parentId: 'cat-1',
-    parentName: 'Electronics',
-    productCount: 58,
-    status: 'active',
-    createdAt: '2024-01-16'
-  },
-  {
-    id: 'cat-3',
-    name: 'Laptops & Computers',
-    slug: 'laptops-computers',
-    description: 'MacBooks, Windows PCs, and accessories.',
-    parentId: 'cat-1',
-    parentName: 'Electronics',
-    productCount: 44,
-    status: 'active',
-    createdAt: '2024-01-18'
-  },
-  {
-    id: 'cat-4',
-    name: 'Apparel & Fashion',
-    slug: 'apparel-fashion',
-    description: 'Clothing, footwear, and wearable fashion.',
-    parentId: null,
-    productCount: 310,
-    status: 'active',
-    createdAt: '2024-02-01'
-  },
-  {
-    id: 'cat-5',
-    name: 'Home & Kitchen',
-    slug: 'home-kitchen',
-    description: 'Furniture, appliances, and decor.',
-    parentId: null,
-    productCount: 89,
-    status: 'archived',
-    createdAt: '2024-02-10'
-  }
-];
+// const INITIAL_CATEGORIES: Category[] = [
+//   {
+//     id: 'cat-1',
+//     name: 'Electronics',
+//     slug: 'electronics',
+//     description: 'Gadgets, devices, and electronic accessories.',
+//     parentId: null,
+//     productCount: 142,
+//     status: 'active',
+//     createdAt: '2024-01-15'
+//   },
+//   {
+//     id: 'cat-2',
+//     name: 'Smartphones',
+//     slug: 'smartphones',
+//     description: 'iOS and Android smartphones.',
+//     parentId: 'cat-1',
+//     parentName: 'Electronics',
+//     productCount: 58,
+//     status: 'active',
+//     createdAt: '2024-01-16'
+//   },
+//   {
+//     id: 'cat-3',
+//     name: 'Laptops & Computers',
+//     slug: 'laptops-computers',
+//     description: 'MacBooks, Windows PCs, and accessories.',
+//     parentId: 'cat-1',
+//     parentName: 'Electronics',
+//     productCount: 44,
+//     status: 'active',
+//     createdAt: '2024-01-18'
+//   },
+//   {
+//     id: 'cat-4',
+//     name: 'Apparel & Fashion',
+//     slug: 'apparel-fashion',
+//     description: 'Clothing, footwear, and wearable fashion.',
+//     parentId: null,
+//     productCount: 310,
+//     status: 'active',
+//     createdAt: '2024-02-01'
+//   },
+//   {
+//     id: 'cat-5',
+//     name: 'Home & Kitchen',
+//     slug: 'home-kitchen',
+//     description: 'Furniture, appliances, and decor.',
+//     parentId: null,
+//     productCount: 89,
+//     status: 'archived',
+//     createdAt: '2024-02-10'
+//   }
+// ];
 
 export default function CategoriesPage() {
-  const [categories, setCategories] = useState<Category[]>(INITIAL_CATEGORIES);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
@@ -158,7 +155,7 @@ export default function CategoriesPage() {
       name: '',
       slug: '',
       parentId: 'none',
-      file: null as File | null,
+      file: '' as File | string,
       description: '',
       status: 'active'
     }
@@ -186,8 +183,7 @@ export default function CategoriesPage() {
       reset({
         name: categoryToEdit.name,
         slug: categoryToEdit.slug,
-        parentId: categoryToEdit.parentId || 'none',
-        file: categoryToEdit.file || null,
+        file: categoryToEdit.thumbnail,
         description: categoryToEdit.description || '',
         status: categoryToEdit.status
       });
@@ -198,7 +194,7 @@ export default function CategoriesPage() {
         slug: '',
         parentId: 'none',
         description: '',
-        file: null,
+        file: '',
         status: 'active'
       });
     }
@@ -206,26 +202,48 @@ export default function CategoriesPage() {
   };
 
   // Submit Handler
-  const onSubmit = async (data: any) => {
+  const onSubmit = async (data: {
+    name: string;
+    slug: string;
+    file: File | string;
+    description: string;
+  }) => {
     setIsSubmitting(true);
     try {
       const formData = new FormData();
       formData.append('name', data.name);
       formData.append('slug', data.slug);
-      formData.append('thumbnail', data.file);
+      typeof data.file != 'string' && formData.append('thumbnail', data.file);
       formData.append('description', data.description);
-      const response = await fetch(API_BASE_URL + '/categories', {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${token}`
-        },
-        body: formData
-      });
 
-      if (response.ok) {
-        fetchCategories();
-        toast.success('Category updated successfully');
-        setIsModalOpen(false);
+      if (editingCategory) {
+        const response = await fetch(API_BASE_URL + '/categories/' + editingCategory.id, {
+          method: 'PUT',
+          headers: {
+            Authorization: `Bearer ${token}`
+          },
+          body: formData
+        });
+
+        if (response.ok) {
+          fetchCategories();
+          toast.success('Category updated successfully');
+          setIsModalOpen(false);
+        }
+      } else {
+        const response = await fetch(API_BASE_URL + '/categories', {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${token}`
+          },
+          body: formData
+        });
+
+        if (response.ok) {
+          fetchCategories();
+          toast.success('Category created successfully');
+          setIsModalOpen(false);
+        }
       }
       // Call fetching data on parent node
     } catch (error) {
@@ -253,8 +271,7 @@ export default function CategoriesPage() {
   const filteredCategories = categories.filter(
     (cat) =>
       cat.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      cat.slug.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (cat.parentName && cat.parentName.toLowerCase().includes(searchQuery.toLowerCase()))
+      cat.slug.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   useEffect(() => {
@@ -303,7 +320,6 @@ export default function CategoriesPage() {
                 <TableRow>
                   <TableHead>Category</TableHead>
                   <TableHead>Slug</TableHead>
-                  <TableHead>Parent Category</TableHead>
                   {/* <TableHead className="text-center">Products</TableHead> */}
                   {/* <TableHead>Status</TableHead> */}
                   <TableHead className="text-right">Actions</TableHead>
@@ -322,11 +338,7 @@ export default function CategoriesPage() {
                       <TableCell className="font-medium">
                         <div className="flex items-center gap-2">
                           <div className="bg-muted flex h-8 w-8 items-center justify-center rounded-md">
-                            {cat.parentId ? (
-                              <IconFolder className="text-muted-foreground h-4 w-4" />
-                            ) : (
-                              <IconCategory className="text-primary h-4 w-4" />
-                            )}
+                            <IconCategory className="text-primary h-4 w-4" />
                           </div>
                           <div>
                             <p className="font-medium">{cat.name}</p>
@@ -339,15 +351,7 @@ export default function CategoriesPage() {
                         </div>
                       </TableCell>
                       <TableCell className="font-mono text-xs">{cat.slug}</TableCell>
-                      <TableCell>
-                        {cat.parentName ? (
-                          <Badge variant="outline" className="font-normal">
-                            {cat.parentName}
-                          </Badge>
-                        ) : (
-                          <span className="text-muted-foreground text-xs">— Top Level —</span>
-                        )}
-                      </TableCell>
+
                       {/* <TableCell className="text-center font-medium">{cat.productCount}</TableCell>
                       <TableCell>
                         <Badge
@@ -458,17 +462,17 @@ export default function CategoriesPage() {
               </div>
 
               {/* Single File Upload with React Hook Form Controller */}
-              <div className="space-y-2">
-                <Label>Category Image *</Label>
+              <div className="max-h-36 space-y-2">
+                <Label>Category Image * </Label>
                 <Controller
                   name="file"
                   control={control}
-                  rules={{ required: 'Category image is required' }}
                   render={({ field }) => (
                     <SingleFileUploader
-                      value={field.value}
-                      onValueChange={(uploadedFile) => field.onChange(uploadedFile)}
+                      value={field.value} // Can be a File object, image URL string (e.g., "/uploads/cat-1.png"), or null
+                      onValueChange={(newFile) => field.onChange(newFile)}
                       maxSize={1024 * 1024 * 2} // 2MB
+                      {...register('file', { required: 'Image is required' })}
                     />
                   )}
                 />
