@@ -10,11 +10,12 @@ import {
   IconFolder,
   IconLoader2
 } from '@tabler/icons-react';
-import React, { useState } from 'react';
-import { useForm } from 'react-hook-form';
+import React, { useCallback, useEffect, useState } from 'react';
+import { useForm, Controller } from 'react-hook-form';
 import { toast } from 'sonner';
 
 // UI Components
+import { SingleFileUploader } from '@/components/file-upload';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
@@ -52,9 +53,24 @@ import {
   TableRow
 } from '@/components/ui/table';
 import { Textarea } from '@/components/ui/textarea';
+import { API_BASE_URL } from '@/constants';
+
+// Interface definition for Category
+interface Category {
+  id: string;
+  name: string;
+  slug: string;
+  description?: string;
+  parentId?: string | null;
+  parentName?: string;
+  productCount: number;
+  status: string;
+  createdAt: string;
+  file?: File | null;
+}
 
 // Mock Initial Data
-const INITIAL_CATEGORIES = [
+const INITIAL_CATEGORIES: Category[] = [
   {
     id: 'cat-1',
     name: 'Electronics',
@@ -110,11 +126,24 @@ const INITIAL_CATEGORIES = [
 ];
 
 export default function CategoriesPage() {
-  const [categories, setCategories] = useState(INITIAL_CATEGORIES);
+  const [categories, setCategories] = useState<Category[]>(INITIAL_CATEGORIES);
   const [searchQuery, setSearchQuery] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingCategory, setEditingCategory] = useState<any | null>(null);
+  const [editingCategory, setEditingCategory] = useState<Category | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const fetchCategories = useCallback(async () => {
+    const response = await fetch(API_BASE_URL + '/categories', {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      setCategories(data);
+    }
+  }, []);
 
   const {
     register,
@@ -122,17 +151,19 @@ export default function CategoriesPage() {
     setValue,
     watch,
     reset,
+    control,
     formState: { errors }
   } = useForm({
     defaultValues: {
       name: '',
       slug: '',
       parentId: 'none',
+      file: null as File | null,
       description: '',
       status: 'active'
     }
   });
-
+  const token = localStorage.getItem('token');
   // Auto-generate slug from name
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const nameValue = e.target.value;
@@ -149,13 +180,14 @@ export default function CategoriesPage() {
   };
 
   // Open modal for Creating or Editing
-  const handleOpenModal = (categoryToEdit: any = null) => {
+  const handleOpenModal = (categoryToEdit: Category | null = null) => {
     if (categoryToEdit) {
       setEditingCategory(categoryToEdit);
       reset({
         name: categoryToEdit.name,
         slug: categoryToEdit.slug,
         parentId: categoryToEdit.parentId || 'none',
+        file: categoryToEdit.file || null,
         description: categoryToEdit.description || '',
         status: categoryToEdit.status
       });
@@ -166,6 +198,7 @@ export default function CategoriesPage() {
         slug: '',
         parentId: 'none',
         description: '',
+        file: null,
         status: 'active'
       });
     }
@@ -176,41 +209,25 @@ export default function CategoriesPage() {
   const onSubmit = async (data: any) => {
     setIsSubmitting(true);
     try {
-      await new Promise((res) => setTimeout(res, 800)); // Simulate API call
+      const formData = new FormData();
+      formData.append('name', data.name);
+      formData.append('slug', data.slug);
+      formData.append('thumbnail', data.file);
+      formData.append('description', data.description);
+      const response = await fetch(API_BASE_URL + '/categories', {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`
+        },
+        body: formData
+      });
 
-      const parentCategory = categories.find((c) => c.id === data.parentId);
-
-      if (editingCategory) {
-        setCategories((prev) =>
-          prev.map((cat) =>
-            cat.id === editingCategory.id
-              ? {
-                  ...cat,
-                  ...data,
-                  parentId: data.parentId === 'none' ? null : data.parentId,
-                  parentName: parentCategory ? parentCategory.name : undefined
-                }
-              : cat
-          )
-        );
+      if (response.ok) {
+        fetchCategories();
         toast.success('Category updated successfully');
-      } else {
-        const newCategory = {
-          id: `cat-${Date.now()}`,
-          name: data.name,
-          slug: data.slug,
-          description: data.description,
-          parentId: data.parentId === 'none' ? null : data.parentId,
-          parentName: parentCategory ? parentCategory.name : undefined,
-          productCount: 0,
-          status: data.status,
-          createdAt: new Date().toISOString().split('T')[0]
-        };
-        setCategories((prev) => [newCategory, ...prev]);
-        toast.success('Category created successfully');
+        setIsModalOpen(false);
       }
-
-      setIsModalOpen(false);
+      // Call fetching data on parent node
     } catch (error) {
       toast.error('Something went wrong');
     } finally {
@@ -219,9 +236,17 @@ export default function CategoriesPage() {
   };
 
   // Delete Category
-  const handleDelete = (id: string) => {
-    setCategories((prev) => prev.filter((cat) => cat.id !== id));
-    toast.success('Category deleted successfully');
+  const handleDelete = async (id: string) => {
+    const response = await fetch(API_BASE_URL + '/categories/' + id, {
+      method: 'DELETE',
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+    if (response.ok) {
+      fetchCategories();
+      toast.success('Category deleted successfully');
+    }
   };
 
   // Filter Categories
@@ -232,6 +257,9 @@ export default function CategoriesPage() {
       (cat.parentName && cat.parentName.toLowerCase().includes(searchQuery.toLowerCase()))
   );
 
+  useEffect(() => {
+    fetchCategories();
+  }, [fetchCategories]);
   return (
     <>
       {/* Header */}
@@ -249,7 +277,7 @@ export default function CategoriesPage() {
       </div>
 
       {/* Main Content */}
-      <Card>
+      <Card className="mt-6">
         <CardHeader className="pb-4">
           <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             <div className="relative w-full md:w-80">
@@ -276,8 +304,8 @@ export default function CategoriesPage() {
                   <TableHead>Category</TableHead>
                   <TableHead>Slug</TableHead>
                   <TableHead>Parent Category</TableHead>
-                  <TableHead className="text-center">Products</TableHead>
-                  <TableHead>Status</TableHead>
+                  {/* <TableHead className="text-center">Products</TableHead> */}
+                  {/* <TableHead>Status</TableHead> */}
                   <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
@@ -320,7 +348,7 @@ export default function CategoriesPage() {
                           <span className="text-muted-foreground text-xs">— Top Level —</span>
                         )}
                       </TableCell>
-                      <TableCell className="text-center font-medium">{cat.productCount}</TableCell>
+                      {/* <TableCell className="text-center font-medium">{cat.productCount}</TableCell>
                       <TableCell>
                         <Badge
                           variant={cat.status === 'active' ? 'default' : 'secondary'}
@@ -328,7 +356,7 @@ export default function CategoriesPage() {
                         >
                           {cat.status}
                         </Badge>
-                      </TableCell>
+                      </TableCell> */}
                       <TableCell className="text-right">
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
@@ -364,7 +392,7 @@ export default function CategoriesPage() {
 
       {/* Add / Edit Dialog */}
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <DialogContent className="sm:max-w-125">
+        <DialogContent className="sm:max-w-150">
           <DialogHeader>
             <DialogTitle>{editingCategory ? 'Edit Category' : 'Add New Category'}</DialogTitle>
             <DialogDescription>
@@ -388,58 +416,66 @@ export default function CategoriesPage() {
               )}
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="slug">URL Slug *</Label>
-              <Input
-                id="slug"
-                placeholder="e.g. footwear"
-                {...register('slug', { required: 'Slug is required' })}
-              />
-              {errors.slug && (
-                <p className="text-destructive text-xs">{errors.slug.message as string}</p>
-              )}
+            <div className="flex gap-4">
+              <div className="flex-1 space-y-2">
+                <Label htmlFor="status">Status</Label>
+                <Select
+                  value={watch('status')}
+                  onValueChange={(val: string) => setValue('status', val)}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="active">Active</SelectItem>
+                    <SelectItem value="archived">Archived</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="flex-1 space-y-2">
+                <Label htmlFor="slug">URL Slug *</Label>
+                <Input
+                  id="slug"
+                  placeholder="e.g. footwear"
+                  {...register('slug', { required: 'Slug is required' })}
+                />
+                {errors.slug && (
+                  <p className="text-destructive text-xs">{errors.slug.message as string}</p>
+                )}
+              </div>
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="parentId">Parent Category</Label>
-              <Select value={watch('parentId')} onValueChange={(val) => setValue('parentId', val)}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select parent (Optional)" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="none">— None (Top Level) —</SelectItem>
-                  {categories
-                    .filter((c) => c.id !== editingCategory?.id) // Prevent selecting self as parent
-                    .map((c) => (
-                      <SelectItem key={c.id} value={c.id}>
-                        {c.name}
-                      </SelectItem>
-                    ))}
-                </SelectContent>
-              </Select>
-            </div>
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <div className="space-y-2">
+                <Label htmlFor="description">Description</Label>
+                <Textarea
+                  id="description"
+                  placeholder="Brief description for SEO and storefront..."
+                  className="h-32 resize-none"
+                  {...register('description')}
+                />
+              </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="status">Status</Label>
-              <Select value={watch('status')} onValueChange={(val: any) => setValue('status', val)}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select status" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="active">Active</SelectItem>
-                  <SelectItem value="archived">Archived</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="description">Description</Label>
-              <Textarea
-                id="description"
-                placeholder="Brief description for SEO and storefront..."
-                rows={3}
-                {...register('description')}
-              />
+              {/* Single File Upload with React Hook Form Controller */}
+              <div className="space-y-2">
+                <Label>Category Image *</Label>
+                <Controller
+                  name="file"
+                  control={control}
+                  rules={{ required: 'Category image is required' }}
+                  render={({ field }) => (
+                    <SingleFileUploader
+                      value={field.value}
+                      onValueChange={(uploadedFile) => field.onChange(uploadedFile)}
+                      maxSize={1024 * 1024 * 2} // 2MB
+                    />
+                  )}
+                />
+                {errors.file && (
+                  <p className="text-destructive text-xs">{errors.file.message as string}</p>
+                )}
+              </div>
             </div>
 
             <DialogFooter className="pt-4">
