@@ -30,16 +30,30 @@ export interface FooterItem {
   }[];
 }
 export interface User {
-  avator: string;
-  createdAt: string;
-  email: string;
-  enabled: boolean;
+  id: string;
   firstName: string;
-  id: number;
   lastName: string;
-  phone: string;
+  email: string;
+  avator: string;
   role: string;
+  phone: string;
+  status: string;
+  totalOrders: number;
+  totalSpent: number;
+  createdAt: string;
 }
+export interface PaginatedUsersResponse {
+  content: User[];
+  empty: boolean;
+  first: boolean;
+  last: boolean;
+  number: number;
+  numberOfElements: number;
+  size: number;
+  totalElements: number;
+  totalPages: number;
+}
+
 export type MainNavItem = NavItemWithOptionalChildren;
 
 export type SidebarNavItem = NavItemWithChildren;

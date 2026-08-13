@@ -1,7 +1,6 @@
 'use client';
 
 import {
-  IconPlus,
   IconSearch,
   IconEdit,
   IconTrash,
@@ -14,7 +13,7 @@ import {
   IconFilter,
   IconMail
 } from '@tabler/icons-react';
-import React, { useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
@@ -56,68 +55,11 @@ import {
   TableHeader,
   TableRow
 } from '@/components/ui/table';
-
-// Mock Initial Users
-const INITIAL_USERS = [
-  {
-    id: 'usr-1',
-    name: 'Sarah Connor',
-    email: 'sarah.c@example.com',
-    avatarUrl: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150',
-    role: 'Admin',
-    status: 'Active',
-    totalOrders: 28,
-    totalSpent: 3420.5,
-    createdAt: '2023-11-12'
-  },
-  {
-    id: 'usr-2',
-    name: 'John Doe',
-    email: 'john.doe@example.com',
-    avatarUrl: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150',
-    role: 'Customer',
-    status: 'Active',
-    totalOrders: 14,
-    totalSpent: 1250.0,
-    createdAt: '2024-01-05'
-  },
-  {
-    id: 'usr-3',
-    name: 'Michael Scott',
-    email: 'm.scott@dunder.com',
-    avatarUrl: 'https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=150',
-    role: 'Vendor',
-    status: 'Active',
-    totalOrders: 42,
-    totalSpent: 8900.25,
-    createdAt: '2023-09-20'
-  },
-  {
-    id: 'usr-4',
-    name: 'Emily Watson',
-    email: 'emily.w@example.com',
-    avatarUrl: '',
-    role: 'Customer',
-    status: 'Pending',
-    totalOrders: 0,
-    totalSpent: 0.0,
-    createdAt: '2024-02-14'
-  },
-  {
-    id: 'usr-5',
-    name: 'Alex Rivera',
-    email: 'arivera@example.com',
-    avatarUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150',
-    role: 'Customer',
-    status: 'Suspended',
-    totalOrders: 2,
-    totalSpent: 140.0,
-    createdAt: '2023-12-01'
-  }
-];
+import { API_BASE_URL } from '@/constants';
+import { PaginatedUsersResponse, User } from '@/types';
 
 export default function UsersPage() {
-  const [users, setUsers] = useState(INITIAL_USERS);
+  const [users, setUsers] = useState<User[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [roleFilter, setRoleFilter] = useState('all');
   const [statusFilter, setStatusFilter] = useState('all');
@@ -125,6 +67,20 @@ export default function UsersPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingUser, setEditingUser] = useState<any | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const getUsers = useCallback(async () => {
+    const token = localStorage.getItem('token') || '';
+    const response = await fetch(API_BASE_URL + '/users?page=0&size=10&sort=id%2CASC', {
+      headers: {
+        Authorization: 'Bearer ' + token
+      }
+    });
+    console.log(response, token);
+    if (response.ok) {
+      const data: PaginatedUsersResponse = await response.json();
+      setUsers(data.content);
+    }
+  }, []);
 
   const {
     register,
@@ -166,26 +122,14 @@ export default function UsersPage() {
 
   // Submit Handler
   const onSubmit = async (data: any) => {
+    const token = localStorage.getItem('token') || '';
     setIsSubmitting(true);
     try {
       await new Promise((res) => setTimeout(res, 800)); // Simulate API call
 
       if (editingUser) {
-        setUsers((prev) => prev.map((u) => (u.id === editingUser.id ? { ...u, ...data } : u)));
         toast.success('User updated successfully');
       } else {
-        const newUser = {
-          id: `usr-${Date.now()}`,
-          name: data.name,
-          email: data.email,
-          avatarUrl: '',
-          role: data.role,
-          status: data.status,
-          totalOrders: 0,
-          totalSpent: 0,
-          createdAt: new Date().toISOString().split('T')[0]
-        };
-        setUsers((prev) => [newUser, ...prev]);
         toast.success('User account created');
       }
       setIsModalOpen(false);
@@ -198,20 +142,18 @@ export default function UsersPage() {
 
   // Status Toggle Action
   const toggleUserStatus = (userId: string, newStatus: string) => {
-    setUsers((prev) => prev.map((u) => (u.id === userId ? { ...u, status: newStatus } : u)));
     toast.success(`Account status updated to ${newStatus}`);
   };
 
   // Delete User
   const handleDeleteUser = (userId: string) => {
-    setUsers((prev) => prev.filter((u) => u.id !== userId));
     toast.success('User account deleted');
   };
 
   // Filtering Logic
   const filteredUsers = users.filter((u) => {
     const matchesSearch =
-      u.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      u.firstName.toLowerCase().includes(searchQuery.toLowerCase()) ||
       u.email.toLowerCase().includes(searchQuery.toLowerCase());
 
     const matchesRole = roleFilter === 'all' || u.role.toLowerCase() === roleFilter.toLowerCase();
@@ -230,7 +172,9 @@ export default function UsersPage() {
       .toUpperCase()
       .slice(0, 2);
   };
-
+  useEffect(() => {
+    getUsers();
+  }, [getUsers]);
   return (
     <div className="flex-1 space-y-6 p-6 md:p-8">
       {/* Header */}
@@ -241,10 +185,12 @@ export default function UsersPage() {
             Manage customer accounts, roles, permissions, and administrative access.
           </p>
         </div>
-        <Button onClick={() => handleOpenModal()} className="flex items-center gap-2">
+        <div className="">
+          {/* <Button onClick={() => handleOpenModal()} className="flex items-center gap-2">
           <IconPlus className="h-4 w-4" />
           Add New User
-        </Button>
+        </Button> */}
+        </div>
       </div>
 
       {/* KPI Cards Summary */}
@@ -375,11 +321,11 @@ export default function UsersPage() {
                       <TableCell>
                         <div className="flex items-center gap-3">
                           <Avatar className="h-9 w-9">
-                            <AvatarImage src={user.avatarUrl} alt={user.name} />
-                            <AvatarFallback>{getInitials(user.name)}</AvatarFallback>
+                            <AvatarImage src={user.avator} alt={user.firstName} />
+                            <AvatarFallback>{getInitials(user.firstName)}</AvatarFallback>
                           </Avatar>
                           <div>
-                            <p className="font-medium">{user.name}</p>
+                            <p className="font-medium">{user.firstName}</p>
                             <p className="text-muted-foreground flex items-center gap-1 text-xs">
                               <IconMail className="h-3 w-3" />
                               {user.email}
@@ -407,7 +353,7 @@ export default function UsersPage() {
                       <TableCell>
                         <Badge
                           variant={
-                            user.status === 'Active'
+                            user.status || 'Active' === 'Active'
                               ? 'default'
                               : user.status === 'Suspended'
                                 ? 'destructive'
@@ -415,21 +361,26 @@ export default function UsersPage() {
                           }
                           className="capitalize"
                         >
-                          {user.status}
+                          {user.status || 'Active'}
                         </Badge>
                       </TableCell>
 
                       {/* Orders */}
-                      <TableCell className="text-center font-medium">{user.totalOrders}</TableCell>
+                      <TableCell className="text-center font-medium">
+                        {user.totalOrders || 0}
+                      </TableCell>
 
                       {/* Total Spent */}
                       <TableCell className="text-right font-medium">
-                        ${user.totalSpent.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                        $
+                        {(user.totalSpent || 0).toLocaleString('en-US', {
+                          minimumFractionDigits: 2
+                        })}
                       </TableCell>
 
                       {/* Joined Date */}
                       <TableCell className="text-muted-foreground text-right font-mono text-xs">
-                        {user.createdAt}
+                        {new Date(user.createdAt).toLocaleString().split(',')[0]}
                       </TableCell>
 
                       {/* Dropdown Actions */}
@@ -495,58 +446,50 @@ export default function UsersPage() {
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 py-2">
             <div className="space-y-2">
-              <Label htmlFor="name">Full Name *</Label>
-              <Input
-                id="name"
-                placeholder="John Doe"
-                {...register('name', { required: 'Name is required' })}
-              />
-              {errors.name && (
-                <p className="text-destructive text-xs">{errors.name.message as string}</p>
-              )}
-            </div>
-
-            <div className="space-y-2">
               <Label htmlFor="email">Email Address *</Label>
               <Input
                 id="email"
+                disabled
                 type="email"
-                placeholder="john@example.com"
+                placeholder={editingUser?.email ?? 'john@example.com'}
                 {...register('email', { required: 'Email is required' })}
               />
               {errors.email && (
                 <p className="text-destructive text-xs">{errors.email.message as string}</p>
               )}
             </div>
+            <div className="flex">
+              <div className="flex-1 space-y-2">
+                <Label htmlFor="role">Role Permission</Label>
+                <Select value={watch('role')} onValueChange={(val: any) => setValue('role', val)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select role" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Customer">Customer</SelectItem>
+                    <SelectItem value="Vendor">Vendor</SelectItem>
+                    <SelectItem value="Admin">Admin</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="role">Role Permission</Label>
-              <Select value={watch('role')} onValueChange={(val: any) => setValue('role', val)}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select role" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Customer">Customer</SelectItem>
-                  <SelectItem value="Vendor">Vendor</SelectItem>
-                  <SelectItem value="Admin">Admin</SelectItem>
-                </SelectContent>
-              </Select>
+              <div className="flex-1 space-y-2">
+                <Label htmlFor="status">Account Status</Label>
+                <Select
+                  value={watch('status')}
+                  onValueChange={(val: any) => setValue('status', val)}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Active">Active</SelectItem>
+                    <SelectItem value="Pending">Pending</SelectItem>
+                    <SelectItem value="Suspended">Suspended</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="status">Account Status</Label>
-              <Select value={watch('status')} onValueChange={(val: any) => setValue('status', val)}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select status" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Active">Active</SelectItem>
-                  <SelectItem value="Pending">Pending</SelectItem>
-                  <SelectItem value="Suspended">Suspended</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
             <DialogFooter className="pt-4">
               <Button type="button" variant="outline" onClick={() => setIsModalOpen(false)}>
                 Cancel

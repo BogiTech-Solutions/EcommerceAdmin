@@ -33,7 +33,6 @@ export const viewport: Viewport = {
     { media: '(prefers-color-scheme: dark)', color: META_THEME_COLORS.dark }
   ]
 };
-
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const cookieStore = await cookies();
   const activeThemeValue = cookieStore.get('active_theme')?.value;
