@@ -340,12 +340,15 @@ export default function CategoriesPage() {
                           <div className="bg-muted flex h-8 w-8 items-center justify-center rounded-md">
                             <IconCategory className="text-primary h-4 w-4" />
                           </div>
-                          <div>
+                          <div className="">
                             <p className="font-medium">{cat.name}</p>
                             {cat.description && (
-                              <p className="text-muted-foreground line-clamp-1 text-xs">
+                              // <p className=" min-[480px]:line-clamp-1 min-[480px]:truncate">
+                              //
+                              // </p>
+                              <div className="text-muted-foreground w-120 truncate text-xs">
                                 {cat.description}
-                              </p>
+                              </div>
                             )}
                           </div>
                         </div>
