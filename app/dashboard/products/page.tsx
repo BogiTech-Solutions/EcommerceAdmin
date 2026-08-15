@@ -58,7 +58,7 @@ import {
 } from '@/components/ui/table';
 import { Textarea } from '@/components/ui/textarea';
 import { API_BASE_URL } from '@/constants';
-import { PaginatedProductResponse, Product } from '@/types';
+import { Category, PaginatedProductResponse, Product } from '@/types';
 
 import KPICard from './kpi-card';
 
@@ -72,13 +72,6 @@ const INITIAL_RESPONSE: PaginatedProductResponse = {
   last: true
 };
 
-const CATEGORIES = [
-  { id: 1, name: 'Electronics' },
-  { id: 2, name: 'Clothing' },
-  { id: 3, name: 'Home & Kitchen' },
-  { id: 4, name: 'Books' }
-];
-
 export default function ProductsPage() {
   const token = localStorage.getItem('token');
   const [productData, setProductData] = useState<PaginatedProductResponse>(INITIAL_RESPONSE);
@@ -89,6 +82,20 @@ export default function ProductsPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const [categories, setCategories] = useState<Category[]>([]);
+  const fetchCategories = useCallback(async () => {
+    const response = await fetch(API_BASE_URL + '/categories', {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      setCategories(data);
+    }
+  }, []);
 
   const getProducts = useCallback(async () => {
     const response = await fetch(
@@ -240,6 +247,9 @@ export default function ProductsPage() {
   useEffect(() => {
     getProducts();
   }, [getProducts]);
+  useEffect(() => {
+    fetchCategories();
+  }, [fetchCategories]);
   return (
     <>
       {/* Header */}
@@ -290,7 +300,7 @@ export default function ProductsPage() {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">All Categories</SelectItem>
-                    {CATEGORIES.map((cat) => (
+                    {categories.map((cat) => (
                       <SelectItem key={cat.id} value={String(cat.id)}>
                         {cat.name}
                       </SelectItem>
@@ -544,7 +554,7 @@ export default function ProductsPage() {
                     <SelectValue placeholder="Select category" />
                   </SelectTrigger>
                   <SelectContent>
-                    {CATEGORIES.map((cat) => (
+                    {categories.map((cat) => (
                       <SelectItem key={cat.id} value={String(cat.id)}>
                         {cat.name}
                       </SelectItem>

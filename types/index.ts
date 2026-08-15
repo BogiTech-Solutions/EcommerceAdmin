@@ -31,10 +31,9 @@ export interface FooterItem {
 }
 export interface User {
   id: string;
-  firstName: string;
-  lastName: string;
+  name: string;
   email: string;
-  avator: string;
+  avatar: string;
   role: string;
   phone: string;
   status: string;
