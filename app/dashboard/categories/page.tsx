@@ -130,6 +130,7 @@ export default function CategoriesPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const fetchCategories = useCallback(async () => {
+    const token = localStorage.getItem('token');
     const response = await fetch(API_BASE_URL + '/categories', {
       headers: {
         Authorization: `Bearer ${token}`
@@ -160,7 +161,7 @@ export default function CategoriesPage() {
       status: 'active'
     }
   });
-  const token = localStorage.getItem('token');
+
   // Auto-generate slug from name
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const nameValue = e.target.value;
@@ -208,6 +209,7 @@ export default function CategoriesPage() {
     file: File | string;
     description: string;
   }) => {
+    const token = localStorage.getItem('token');
     setIsSubmitting(true);
     try {
       const formData = new FormData();
@@ -255,6 +257,7 @@ export default function CategoriesPage() {
 
   // Delete Category
   const handleDelete = async (id: string) => {
+    const token = localStorage.getItem('token');
     const response = await fetch(API_BASE_URL + '/categories/' + id, {
       method: 'DELETE',
       headers: {
