@@ -102,16 +102,13 @@ export interface Advertisement {
   status: AdStatus;
   startDate: string;
   endDate: string;
-  impressions: number;
-  clicks: number;
-  ctr: number; // Click Through Rate percentage
   createdAt: string;
 }
 
 export interface AdFormData {
   title: string;
   placement: AdPlacement;
-  imageUrl: string;
+  file: string | File;
   targetUrl: string;
   status: AdStatus;
   startDate: string;
