@@ -153,7 +153,7 @@ export default function UsersPage() {
   // Filtering Logic
   const filteredUsers = users.filter((u) => {
     const matchesSearch =
-      u.firstName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      u.name.split('')[0].toLowerCase().includes(searchQuery.toLowerCase()) ||
       u.email.toLowerCase().includes(searchQuery.toLowerCase());
 
     const matchesRole = roleFilter === 'all' || u.role.toLowerCase() === roleFilter.toLowerCase();
@@ -321,11 +321,11 @@ export default function UsersPage() {
                       <TableCell>
                         <div className="flex items-center gap-3">
                           <Avatar className="h-9 w-9">
-                            <AvatarImage src={user.avator} alt={user.firstName} />
-                            <AvatarFallback>{getInitials(user.firstName)}</AvatarFallback>
+                            <AvatarImage src={user.avatar} alt={user.name.split('')[0]} />
+                            <AvatarFallback>{getInitials(user.name.split('')[0])}</AvatarFallback>
                           </Avatar>
                           <div>
-                            <p className="font-medium">{user.firstName}</p>
+                            <p className="font-medium">{user.name.split('')[0]}</p>
                             <p className="text-muted-foreground flex items-center gap-1 text-xs">
                               <IconMail className="h-3 w-3" />
                               {user.email}
