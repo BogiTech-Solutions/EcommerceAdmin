@@ -101,9 +101,10 @@ export default function ProductsPage() {
     const response = await fetch(
       API_BASE_URL + '/products/page?page=0&size=10&sortBy=id&sortDir=asc'
     );
-    const data: PaginatedProductResponse = await response.json();
-    setProductData(data);
-    console.log(data);
+    if (response.ok) {
+      const data: PaginatedProductResponse = await response.json();
+      setProductData(data);
+    }
   }, []);
   const {
     register,
