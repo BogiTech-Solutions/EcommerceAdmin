@@ -1,7 +1,6 @@
 'use client';
 
 import {
-  IconCamera,
   IconDeviceDesktop,
   IconDeviceMobile,
   IconLoader2,
@@ -14,7 +13,7 @@ import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
 // UI Components
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { ProfilePhotoUpload } from '@/components/ProfilePhotoUpload';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -34,6 +33,7 @@ import { Textarea } from '@/components/ui/textarea';
 // Icons
 
 // Context
+import { API_BASE_URL } from '@/constants';
 import { useAuth } from '@/context/authContext';
 
 interface ProfileFormData {
@@ -54,7 +54,9 @@ interface SecurityFormData {
 export default function ProfilePage() {
   const { user } = useAuth();
   const [isUpdatingProfile, setIsUpdatingProfile] = useState(false);
+  const [profilePhoto, setProfilePhoto] = useState<File | null>(null);
   const [isUpdatingPassword, setIsUpdatingPassword] = useState(false);
+  const token = localStorage.getItem('token');
 
   // Profile Form setup
   const {
@@ -63,9 +65,9 @@ export default function ProfilePage() {
     formState: { errors: profileErrors, isDirty: isProfileDirty }
   } = useForm<ProfileFormData>({
     defaultValues: {
-      firstName: user?.firstName || 'John',
-      lastName: user?.lastName || 'Doe',
-      email: user?.email || 'admin@ecommerce.com',
+      firstName: user?.name.split(' ')[0],
+      lastName: user?.name.split(' ')[1],
+      email: user?.email,
       role: user?.role,
       bio: 'Head of E-Commerce operations and system administration.'
     }
@@ -85,9 +87,23 @@ export default function ProfilePage() {
   const onUpdateProfile = async (data: ProfileFormData) => {
     setIsUpdatingProfile(true);
     try {
-      // Simulate API update
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      toast.success('Profile information updated successfully');
+      const formData = new FormData();
+      data.firstName && formData.append('firstName', data.firstName);
+      data.lastName && formData.append('lastName', data.lastName);
+      data.phone && formData.append('phone', data.phone);
+      data.bio && formData.append('bio', data.bio);
+      profilePhoto && formData.append('avatar', profilePhoto);
+      const response = await fetch(API_BASE_URL + '/users/me', {
+        method: 'PUT',
+        headers: {
+          Authorization: 'Bearer ' + token
+        },
+        body: formData
+      });
+      if (response.ok) {
+        setProfilePhoto(null);
+        return toast.success('Profile information updated successfully');
+      } else throw new Error('Profile update error');
     } catch (err: any) {
       toast.error('Failed to update profile');
     } finally {
@@ -108,7 +124,17 @@ export default function ProfilePage() {
       setIsUpdatingPassword(false);
     }
   };
-
+  const handleProfileUpdate = () => {
+    if (profilePhoto)
+      onUpdateProfile({
+        firstName: '',
+        lastName: '',
+        email: '',
+        phone: '',
+        role: '',
+        bio: ''
+      });
+  };
   return (
     <>
       {/* Page Header */}
@@ -124,25 +150,15 @@ export default function ProfilePage() {
         <CardContent className="p-6">
           <div className="flex flex-col items-center gap-6 sm:flex-row sm:justify-between">
             <div className="flex flex-col items-center gap-4 sm:flex-row">
-              <div className="group relative">
-                <Avatar className="border-background h-20 w-20 border-2 shadow-md">
-                  <AvatarImage src={user?.avator} alt={user?.firstName || 'User Avatar'} />
-                  <AvatarFallback className="text-xl font-bold">
-                    {user?.firstName ? user.firstName.slice(0, 2).toUpperCase() : 'AD'}
-                  </AvatarFallback>
-                </Avatar>
-                <button
-                  type="button"
-                  className="bg-primary text-primary-foreground absolute right-0 bottom-0 rounded-full p-1.5 shadow-sm transition-transform hover:scale-105"
-                  title="Change Avatar"
-                >
-                  <IconCamera className="h-4 w-4" />
-                </button>
-              </div>
+              {user && (
+                <ProfilePhotoUpload user={user} onFileSelect={(param) => setProfilePhoto(param)} />
+              )}
 
               <div className="space-y-1 text-center sm:text-left">
                 <div className="flex items-center justify-center gap-2 sm:justify-start">
-                  <h3 className="text-xl font-semibold">{user?.firstName || 'Admin User'}</h3>
+                  <h3 className="text-xl font-semibold">
+                    {user?.name.split(' ')[0] || 'Admin User'}
+                  </h3>
                   <Badge variant="secondary" className="gap-1 font-normal">
                     <IconShieldCheck className="h-3.5 w-3.5 text-emerald-500" />
                     Verified
@@ -157,9 +173,11 @@ export default function ProfilePage() {
               </div>
             </div>
 
-            <Button variant="outline" size="sm" onClick={() => toast.info('Avatar upload trigger')}>
-              Change Avatar
-            </Button>
+            {profilePhoto && (
+              <Button variant="outline" size="sm" onClick={handleProfileUpdate}>
+                Change Avatar
+              </Button>
+            )}
           </div>
         </CardContent>
       </Card>
@@ -193,7 +211,7 @@ export default function ProfilePage() {
                     <Label htmlFor="firstName">First Name</Label>
                     <Input
                       id="firstName"
-                      value={user?.firstName}
+                      defaultValue={user?.name.split(' ')[0]}
                       {...registerProfile('firstName', { required: 'First name is required' })}
                     />
                     {profileErrors.firstName && (
@@ -205,7 +223,7 @@ export default function ProfilePage() {
                     <Label htmlFor="lastName">Last Name</Label>
                     <Input
                       id="lastName"
-                      value={user?.lastName}
+                      defaultValue={user?.name.split(' ')[1]}
                       {...registerProfile('lastName', { required: 'Last name is required' })}
                     />
                     {profileErrors.lastName && (
@@ -220,6 +238,7 @@ export default function ProfilePage() {
                     <Input
                       id="email"
                       type="email"
+                      disabled
                       value={user?.email}
                       {...registerProfile('email', { required: 'Email address is required' })}
                     />
@@ -230,7 +249,7 @@ export default function ProfilePage() {
 
                   <div className="space-y-2">
                     <Label htmlFor="phone">Phone Number</Label>
-                    <Input value={user?.phone} id="phone" {...registerProfile('phone')} />
+                    <Input defaultValue={user?.phone} id="phone" {...registerProfile('phone')} />
                   </div>
                 </div>
 
