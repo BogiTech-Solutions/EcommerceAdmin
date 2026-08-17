@@ -26,11 +26,9 @@ interface LoginFormData {
 }
 
 // Explicit Next.js Page Props
-interface PageProps extends React.ComponentProps<'div'> {
-  searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;
-}
+interface PageProps extends React.ComponentProps<'div'> {}
 
-export default function Page({ className, searchParams, ...props }: PageProps) {
+export default function Page({ className, ...props }: PageProps) {
   const { login, user } = useAuth();
   const router = useRouter();
   const [error, setError] = useState<string>('');
@@ -60,7 +58,7 @@ export default function Page({ className, searchParams, ...props }: PageProps) {
     if (user) {
       router.push('/dashboard');
     }
-  }, [user]);
+  }, [user, router]);
   return (
     <div className="bg-muted flex min-h-svh flex-col items-center justify-center gap-6 p-6 md:p-10">
       <div className="flex w-full max-w-sm flex-col gap-6">

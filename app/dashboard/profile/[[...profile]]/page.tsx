@@ -29,10 +29,6 @@ import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
-
-// Icons
-
-// Context
 import { API_BASE_URL } from '@/constants';
 import { useAuth } from '@/context/authContext';
 
@@ -81,7 +77,7 @@ export default function ProfilePage() {
     reset: resetSecurity,
     formState: { errors: securityErrors, isSubmitting: isSubmittingSecurity }
   } = useForm<SecurityFormData>();
-
+  console.log(isSubmittingSecurity);
   const newPassword = watchSecurity('newPassword');
 
   const onUpdateProfile = async (data: ProfileFormData) => {
@@ -114,6 +110,7 @@ export default function ProfilePage() {
   const onUpdatePassword = async (data: SecurityFormData) => {
     setIsUpdatingPassword(true);
     try {
+      console.log(data);
       // Simulate API update
       await new Promise((resolve) => setTimeout(resolve, 1200));
       toast.success('Password updated successfully');

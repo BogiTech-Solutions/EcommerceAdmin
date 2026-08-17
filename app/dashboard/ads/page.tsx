@@ -15,11 +15,11 @@ import {
   IconExternalLink,
   IconCalendarEvent
 } from '@tabler/icons-react';
-import React, { useCallback, useEffect, useState } from 'react';
+import Image from 'next/image';
+import { useCallback, useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
-// UI Components
 import { SingleFileUploader } from '@/components/file-upload';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -106,7 +106,7 @@ export default function AdsPage() {
   });
 
   // Watch Image URL for live preview inside modal
-  const watchedImageUrl = watch('file');
+  // const watchedImageUrl = watch('file');
 
   // Open Modal
   const handleOpenModal = (adToEdit: any = null) => {
@@ -178,11 +178,14 @@ export default function AdsPage() {
 
   // Toggle Active/Paused Status via Switch
   const handleToggleStatus = (adId: string, currentStatus: string) => {
+    console.log(adId, currentStatus);
     toast.success(`Campaign status changed to ${'nextStatus'}`);
   };
 
   // Delete Ad
-  const handleDeleteAd = (adId: string) => {};
+  const handleDeleteAd = (adId: string) => {
+    console.log(adId);
+  };
 
   // Filter Ads
   const filteredAds = ads.filter((ad: Advertisement) => {
@@ -356,7 +359,7 @@ export default function AdsPage() {
                       {/* Preview & Title */}
                       <TableCell>
                         <div className="flex items-center justify-center gap-3">
-                          <img
+                          <Image
                             src={ad.imageUrl}
                             alt={''}
                             className="h-12 w-24 rounded-md border object-cover"

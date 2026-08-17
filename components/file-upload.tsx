@@ -1,6 +1,6 @@
 'use client';
-
 import { UploadCloud, FileIcon, XIcon, AlertCircle, ImageIcon } from 'lucide-react';
+import Image from 'next/image';
 import { HTMLAttributes, useCallback, useEffect, useState } from 'react';
 import { useDropzone, type DropzoneOptions, type FileRejection } from 'react-dropzone';
 
@@ -171,7 +171,11 @@ export function SingleFileUploader({
             {/* Image Thumbnail or File Icon */}
             {isImage && previewUrl ? (
               <div className="bg-muted h-12 w-12 shrink-0 overflow-hidden rounded-lg border">
-                <img src={previewUrl} alt={getFileName()} className="h-full w-full object-cover" />
+                <Image
+                  src={previewUrl}
+                  alt={getFileName()}
+                  className="h-full w-full object-cover"
+                />
               </div>
             ) : (
               <div className="bg-muted shrink-0 rounded-lg p-2.5">

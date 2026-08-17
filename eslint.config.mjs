@@ -18,13 +18,7 @@ const eslintConfig = defineConfig([
       'react-hooks/incompatible-library': 'off'
     }
   },
-  globalIgnores([
-    '.next/**',
-    'out/**',
-    'build/**',
-    'next-env.d.ts',
-    'node_modules/**'
-  ])
+  globalIgnores(['.next/**', 'out/**', 'build/**', 'next-env.d.ts', 'node_modules/**'])
 ]);
 
 export default eslintConfig;

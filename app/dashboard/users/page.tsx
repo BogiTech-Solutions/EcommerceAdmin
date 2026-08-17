@@ -125,6 +125,7 @@ export default function UsersPage() {
     const token = localStorage.getItem('token') || '';
     setIsSubmitting(true);
     try {
+      console.log(data, token);
       await new Promise((res) => setTimeout(res, 800)); // Simulate API call
 
       if (editingUser) {
@@ -147,7 +148,7 @@ export default function UsersPage() {
 
   // Delete User
   const handleDeleteUser = (userId: string) => {
-    toast.success('User account deleted');
+    toast.success(`User account by ID ${userId} deleted`);
   };
 
   // Filtering Logic

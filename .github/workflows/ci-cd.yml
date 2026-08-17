@@ -40,9 +40,9 @@ jobs:
     needs: quality-and-test
     if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
     runs-on: ubuntu-latest
-    
+
     # CRITICAL: Match this to your GitHub Repository Environment if secrets are scoped
-    environment: production 
+    environment: production
 
     env:
       VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}

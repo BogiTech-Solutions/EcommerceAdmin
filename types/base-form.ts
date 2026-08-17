@@ -1,5 +1,6 @@
-import { FileUploaderProps } from '@/components/file-uploader';
 import { Control, FieldPath, FieldValues } from 'react-hook-form';
+
+import { FileUploaderProps } from '@/components/file-uploader';
 
 // Base props that all form components will share
 export interface BaseFormFieldProps<

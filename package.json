@@ -4,12 +4,15 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
-    "build": "next build --turbopack",
+    "build": "next build",
     "start": "next start",
-    "lint": "next lint",
-    "lint:fix": "next lint --fix",
-    "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md,css}\"",
-    "format:check": "prettier --check \"**/*.{js,jsx,ts,tsx,json,md,css}\"",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test": "vitest",
+    "test:watch": "vitest --watch",
+    "test:run": "vitest run",
     "prepare": "husky"
   },
   "lint-staged": {

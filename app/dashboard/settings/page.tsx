@@ -67,6 +67,7 @@ export default function SettingsPage() {
   const onSubmit = async (data: StoreSettingsForm) => {
     setIsSaving(true);
     try {
+      console.log(data);
       // Simulate API call
       await new Promise((resolve) => setTimeout(resolve, 1000));
       toast.success('Settings updated successfully');

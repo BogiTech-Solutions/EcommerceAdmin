@@ -14,6 +14,7 @@ import {
   IconChevronLeft,
   IconChevronRight
 } from '@tabler/icons-react';
+import Image from 'next/image';
 import React, { useCallback, useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { toast } from 'sonner';
@@ -73,7 +74,6 @@ const INITIAL_RESPONSE: PaginatedProductResponse = {
 };
 
 export default function ProductsPage() {
-  const token = localStorage.getItem('token');
   const [productData, setProductData] = useState<PaginatedProductResponse>(INITIAL_RESPONSE);
   const [searchQuery, setSearchQuery] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('all');
@@ -85,6 +85,7 @@ export default function ProductsPage() {
 
   const [categories, setCategories] = useState<Category[]>([]);
   const fetchCategories = useCallback(async () => {
+    const token = localStorage.getItem('token');
     const response = await fetch(API_BASE_URL + '/categories', {
       headers: {
         Authorization: `Bearer ${token}`
@@ -125,7 +126,7 @@ export default function ProductsPage() {
     }
   });
 
-  const watchedImageUrl = watch('file');
+  // const watchedImageUrl = watch('file');
 
   // Modal open
   const handleOpenModal = (product: Product | null = null) => {
@@ -162,6 +163,7 @@ export default function ProductsPage() {
     file: string;
     categoryId: string;
   }) => {
+    const token = localStorage.getItem('token');
     const formData = new FormData();
     formData.append('name', data.name);
     formData.append('description', data.description);
@@ -206,6 +208,7 @@ export default function ProductsPage() {
 
   // Delete product
   const handleDeleteProduct = async (productId: number) => {
+    const token = localStorage.getItem('token');
     try {
       const response = await fetch(API_BASE_URL + '/products/' + productId, {
         method: 'DELETE',
@@ -239,10 +242,10 @@ export default function ProductsPage() {
     (acc: number, curr: Product) => acc + curr.stockQuantity,
     0
   );
-  const totalValue = productData.content.reduce(
-    (acc: number, curr: Product) => acc + curr.price * curr.stockQuantity,
-    0
-  );
+  // const totalValue = productData.content.reduce(
+  //   (acc: number, curr: Product) => acc + curr.price * curr.stockQuantity,
+  //   0
+  // );
   const lowStockCount = productData.content.filter((p: Product) => p.stockQuantity < 10).length;
 
   useEffect(() => {
@@ -362,7 +365,7 @@ export default function ProductsPage() {
                           <div className="flex items-center gap-3">
                             <div className="bg-muted flex h-12 w-12 shrink-0 items-center justify-center rounded-md border">
                               {product.imageUrl ? (
-                                <img
+                                <Image
                                   src={product.imageUrl}
                                   alt={product.name}
                                   className="h-full w-full rounded-md object-cover"
@@ -452,7 +455,7 @@ export default function ProductsPage() {
                   <div>
                     <div className="bg-muted relative flex h-40 w-full items-center justify-center border-b">
                       {product.imageUrl ? (
-                        <img
+                        <Image
                           src={product.imageUrl}
                           alt={product.name}
                           className="h-full w-full object-cover"
