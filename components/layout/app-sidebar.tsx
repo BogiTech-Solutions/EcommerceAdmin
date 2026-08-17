@@ -2,12 +2,18 @@
 
 import {
   IconBell,
+  IconCategory,
   IconChevronRight,
   IconChevronsDown,
   IconCreditCard,
+  IconDashboard,
+  IconLayoutKanban,
   IconLogout,
+  IconPackage,
   IconPhotoUp,
   IconSettings,
+  IconSpeakerphone,
+  IconUser,
   IconUserCircle
 } from '@tabler/icons-react';
 import Link from 'next/link';
@@ -15,7 +21,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import * as React from 'react';
 
 // UI Components
-import { Collapsible, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -35,18 +41,98 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarMenuSub,
+  SidebarMenuSubButton,
+  SidebarMenuSubItem,
   SidebarRail
 } from '@/components/ui/sidebar';
-
-// Icons
-
 import { UserAvatarProfile } from '@/components/user-avatar-profile';
 import { useAuth } from '@/context/authContext';
 
-import { Icons } from '../icons';
 import { OrgSwitcher } from '../org-switcher';
 
-// Context & Data
+// Nav item interface
+export interface NavSubItem {
+  title: string;
+  url: string;
+}
+
+export interface NavItem {
+  title: string;
+  url: string;
+  icon: string;
+  isActive?: boolean;
+  shortcut?: string[];
+  items?: NavSubItem[];
+}
+
+// Navigation items config
+export const navItems: NavItem[] = [
+  {
+    title: 'Dashboard',
+    url: '/dashboard/overview',
+    icon: 'dashboard',
+    isActive: false,
+    shortcut: ['d', 'd'],
+    items: []
+  },
+  {
+    title: 'Categories',
+    url: '/dashboard/categories',
+    icon: 'category',
+    shortcut: ['c', 'c'],
+    isActive: false,
+    items: []
+  },
+  {
+    title: 'Products',
+    url: '/dashboard/products',
+    icon: 'products',
+    shortcut: ['p', 'p'],
+    isActive: false,
+    items: []
+  },
+  {
+    title: 'Users',
+    url: '/dashboard/users',
+    icon: 'user',
+    shortcut: ['u', 'u'],
+    isActive: false,
+    items: []
+  },
+  {
+    title: 'Orders',
+    url: '/dashboard/orders',
+    icon: 'kanban',
+    shortcut: ['o', 'o'],
+    isActive: false,
+    items: []
+  },
+  {
+    title: 'Ads',
+    url: '/dashboard/ads',
+    icon: 'ads',
+    shortcut: ['a', 'a'],
+    isActive: false,
+    items: []
+  },
+  {
+    title: 'Profile',
+    url: '/dashboard/profile',
+    icon: 'profile',
+    shortcut: ['p', 'r'],
+    isActive: false,
+    items: []
+  },
+  {
+    title: 'Settings',
+    url: '/dashboard/settings',
+    icon: 'settings',
+    shortcut: ['s', 's'],
+    isActive: false,
+    items: []
+  }
+];
 
 export const company = {
   name: 'Acme Inc',
@@ -59,6 +145,18 @@ const tenants = [
   { id: '2', name: 'Beta Corp' },
   { id: '3', name: 'Gamma Ltd' }
 ];
+
+// Map string keys to Tabler React Components
+const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
+  dashboard: IconDashboard,
+  category: IconCategory,
+  products: IconPackage,
+  user: IconUser,
+  kanban: IconLayoutKanban,
+  ads: IconSpeakerphone,
+  profile: IconUserCircle,
+  settings: IconSettings
+};
 
 export default function AppSidebar() {
   const { user, logout, isAuthenticated } = useAuth();
@@ -73,7 +171,7 @@ export default function AppSidebar() {
   }, [isAuthenticated, router]);
 
   const handleSwitchTenant = (_tenantId: string) => {
-    // Tenant switching implementation
+    // Tenant switching logic
   };
 
   const activeTenant = tenants[0];
@@ -98,7 +196,7 @@ export default function AppSidebar() {
           <SidebarGroupLabel>Overview</SidebarGroupLabel>
           <SidebarMenu>
             {navItems.map((item) => {
-              const ItemIcon = (item.icon && Icons[item.icon as keyof typeof Icons]) || Icons.logo;
+              const ItemIcon = iconMap[item.icon] || IconPackage;
               const hasChildren = Boolean(item.items && item.items.length > 0);
               const isParentActive = pathname === item.url || pathname.startsWith(`${item.url}/`);
 
@@ -118,25 +216,19 @@ export default function AppSidebar() {
                           <IconChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
                         </SidebarMenuButton>
                       </CollapsibleTrigger>
-                      {/* <CollapsibleContent>
+                      <CollapsibleContent>
                         <SidebarMenuSub>
-                          {item.items?.map((subItem) => {
-                            const isSubActive = pathname === subItem.url;
-                            return (
-                              <SidebarMenuSubItem key={subItem.title}>
-                                <SidebarMenuSubButton
-                                  asChild
-                                  isActive={isSubActive}
-                                >
-                                  <Link href={subItem.url}>
-                                    <span>{subItem.title}</span>
-                                  </Link>
-                                </SidebarMenuSubButton>
-                              </SidebarMenuSubItem>
-                            );
-                          })}
+                          {item.items?.map((subItem) => (
+                            <SidebarMenuSubItem key={subItem.title}>
+                              <SidebarMenuSubButton asChild isActive={pathname === subItem.url}>
+                                <Link href={subItem.url}>
+                                  <span>{subItem.title}</span>
+                                </Link>
+                              </SidebarMenuSubButton>
+                            </SidebarMenuSubItem>
+                          ))}
                         </SidebarMenuSub>
-                      </CollapsibleContent> */}
+                      </CollapsibleContent>
                     </SidebarMenuItem>
                   </Collapsible>
                 );
@@ -222,71 +314,3 @@ export default function AppSidebar() {
     </Sidebar>
   );
 }
-
-// Updated navigation config with Category, Settings, and Profile items
-export const navItems = [
-  {
-    title: 'Dashboard',
-    url: '/dashboard/overview',
-    icon: 'dashboard',
-    isActive: false,
-    shortcut: ['d', 'd'],
-    items: []
-  },
-  {
-    title: 'Categories',
-    url: '/dashboard/categories',
-    icon: 'category',
-    shortcut: ['c', 'c'],
-    isActive: false,
-    items: []
-  },
-  {
-    title: 'Products',
-    url: '/dashboard/products',
-    icon: 'products',
-    shortcut: ['p', 'p'],
-    isActive: false,
-    items: []
-  },
-  {
-    title: 'Users',
-    url: '/dashboard/users',
-    icon: 'user',
-    shortcut: ['u', 'u'],
-    isActive: false,
-    items: []
-  },
-  {
-    title: 'Orders',
-    url: '/dashboard/orders',
-    icon: 'kanban',
-    shortcut: ['o', 'o'],
-    isActive: false,
-    items: []
-  },
-  {
-    title: 'Ads',
-    url: '/dashboard/ads',
-    icon: 'kanban',
-    shortcut: ['a', 'a'],
-    isActive: false,
-    items: []
-  },
-  {
-    title: 'Profile',
-    url: '/dashboard/profile',
-    icon: 'user',
-    shortcut: ['p', 'r'],
-    isActive: false,
-    items: []
-  },
-  {
-    title: 'Settings',
-    url: '/dashboard/settings',
-    icon: 'settings',
-    shortcut: ['s', 's'],
-    isActive: false,
-    items: []
-  }
-];
