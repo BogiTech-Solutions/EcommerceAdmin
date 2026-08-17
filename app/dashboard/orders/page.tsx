@@ -13,7 +13,7 @@ import {
   IconMapPin,
   IconCreditCard
 } from '@tabler/icons-react';
-import React, { useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
 
 // UI Components
@@ -52,130 +52,59 @@ import {
   TableRow
 } from '@/components/ui/table';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { API_BASE_URL } from '@/constants';
+import { PaginatedOrderResponse } from '@/types';
 
-// Mock Initial Orders
-const INITIAL_ORDERS = [
-  {
-    id: 'ORD-9821',
-    customerName: 'Sarah Connor',
-    customerEmail: 'sarah.c@example.com',
-    shippingAddress: '742 Evergreen Terrace, Springfield, OR 97477',
-    paymentMethod: 'Credit Card (•••• 4242)',
-    paymentStatus: 'paid',
-    orderStatus: 'processing',
-    items: [
-      {
-        id: 'i1',
-        productName: 'Wireless Noise-Canceling Headphones',
-        sku: 'AUDIO-01',
-        price: 299.99,
-        quantity: 1
-      },
-      { id: 'i2', productName: 'Leather Laptop Sleeve', sku: 'ACC-88', price: 49.99, quantity: 1 }
-    ],
-    subtotal: 349.98,
-    tax: 28.0,
-    shippingFee: 15.0,
-    totalAmount: 392.98,
-    createdAt: '2026-08-09 14:32'
-  },
-  {
-    id: 'ORD-9820',
-    customerName: 'John Doe',
-    customerEmail: 'john.doe@example.com',
-    shippingAddress: '100 North Westchester Ave, White Plains, NY 10604',
-    paymentMethod: 'PayPal',
-    paymentStatus: 'paid',
-    orderStatus: 'shipped',
-    items: [
-      {
-        id: 'i3',
-        productName: 'Mechanical Gaming Keyboard',
-        sku: 'TECH-101',
-        price: 149.5,
-        quantity: 2
-      }
-    ],
-    subtotal: 299.0,
-    tax: 23.92,
-    shippingFee: 0.0,
-    totalAmount: 322.92,
-    createdAt: '2026-08-09 11:15'
-  },
-  {
-    id: 'ORD-9819',
-    customerName: 'Emily Watson',
-    customerEmail: 'emily.w@example.com',
-    shippingAddress: '456 Elm St, Austin, TX 78701',
-    paymentMethod: 'Apple Pay',
-    paymentStatus: 'paid',
-    orderStatus: 'delivered',
-    items: [
-      { id: 'i4', productName: 'Smartwatch Series 5', sku: 'WEAR-05', price: 399.0, quantity: 1 }
-    ],
-    subtotal: 399.0,
-    tax: 31.92,
-    shippingFee: 10.0,
-    totalAmount: 440.92,
-    createdAt: '2026-08-08 09:45'
-  },
-  {
-    id: 'ORD-9818',
-    customerName: 'Michael Scott',
-    customerEmail: 'm.scott@dunder.com',
-    shippingAddress: '1725 Slough Avenue, Scranton, PA 18503',
-    paymentMethod: 'Credit Card (•••• 1122)',
-    paymentStatus: 'pending',
-    orderStatus: 'pending',
-    items: [
-      { id: 'i5', productName: 'Ergonomic Desk Chair', sku: 'FURN-12', price: 250.0, quantity: 1 }
-    ],
-    subtotal: 250.0,
-    tax: 20.0,
-    shippingFee: 25.0,
-    totalAmount: 295.0,
-    createdAt: '2026-08-10 08:05'
-  },
-  {
-    id: 'ORD-9817',
-    customerName: 'Alex Rivera',
-    customerEmail: 'arivera@example.com',
-    shippingAddress: '88 Market St, San Francisco, CA 94105',
-    paymentMethod: 'Credit Card (•••• 9081)',
-    paymentStatus: 'refunded',
-    orderStatus: 'cancelled',
-    items: [
-      { id: 'i6', productName: '4K Ultra HD Monitor', sku: 'DISP-4K', price: 499.99, quantity: 1 }
-    ],
-    subtotal: 499.99,
-    tax: 40.0,
-    shippingFee: 0.0,
-    totalAmount: 539.99,
-    createdAt: '2026-08-07 16:20'
-  }
-];
-
+const initial = {
+  content: [],
+  pageNumber: 0,
+  pageSize: 10,
+  totalElements: 2,
+  totalPages: 1,
+  last: true
+};
 export default function OrdersPage() {
-  const [orders, setOrders] = useState(INITIAL_ORDERS);
+  const [orders, setOrders] = useState<PaginatedOrderResponse>(initial);
   const [searchQuery, setSearchQuery] = useState('');
   const [activeTab, setActiveTab] = useState('all');
   const [selectedOrder, setSelectedOrder] = useState<any | null>(null);
 
-  // Update Status
-  const handleStatusChange = (orderId: string, newStatus: string) => {
-    setOrders((prev) =>
-      prev.map((ord) => (ord.id === orderId ? { ...ord, orderStatus: newStatus } : ord))
-    );
-    if (selectedOrder && selectedOrder.id === orderId) {
-      setSelectedOrder((prev: any) => ({ ...prev, orderStatus: newStatus }));
+  const fetchOrders = useCallback(async () => {
+    const token = localStorage.getItem('token');
+    const response = await fetch(API_BASE_URL + '/orders/paged?page=0&size=10&sort=id%2CASC', {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      setOrders(data);
     }
-    toast.success(`Order ${orderId} updated to ${newStatus}`);
+  }, []);
+
+  // Update Status
+  const handleStatusChange = async (orderId: string, newStatus: string) => {
+    const token = localStorage.getItem('token');
+    const formData = new FormData();
+    formData.append('status', newStatus.toLocaleUpperCase());
+    const response = await fetch(API_BASE_URL + '/orders/' + orderId + '/status', {
+      method: 'PATCH',
+      headers: {
+        Authorization: 'Bearer ' + token
+      },
+      body: formData
+    });
+    if (response.ok) {
+      fetchOrders();
+      toast.success(`Order ${orderId} updated to ${newStatus}`);
+    }
   };
 
   // Filter Orders
-  const filteredOrders = orders.filter((order) => {
+  const filteredOrders = orders.content.filter((order) => {
     const matchesSearch =
-      order.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      order.id.toString().toLowerCase().includes(searchQuery.toLowerCase()) ||
       order.customerName.toLowerCase().includes(searchQuery.toLowerCase()) ||
       order.customerEmail.toLowerCase().includes(searchQuery.toLowerCase());
 
@@ -185,15 +114,15 @@ export default function OrdersPage() {
   });
 
   // KPI Calculations
-  const totalRevenue = orders
+  const totalRevenue = orders.content
     .filter((o) => o.paymentStatus === 'paid')
     .reduce((sum, o) => sum + o.totalAmount, 0);
 
-  const pendingCount = orders.filter((o) => o.orderStatus === 'pending').length;
-  const processingCount = orders.filter(
+  const pendingCount = orders.content.filter((o) => o.orderStatus === 'pending').length;
+  const processingCount = orders.content.filter(
     (o) => o.orderStatus === 'processing' || o.orderStatus === 'shipped'
   ).length;
-  const completedCount = orders.filter((o) => o.orderStatus === 'delivered').length;
+  const completedCount = orders.content.filter((o) => o.orderStatus === 'delivered').length;
 
   // Status Badge Colors
   const getOrderStatusBadge = (status: string) => {
@@ -246,6 +175,9 @@ export default function OrdersPage() {
     }
   };
 
+  useEffect(() => {
+    fetchOrders();
+  }, [fetchOrders]);
   return (
     <>
       {/* Header */}
@@ -354,9 +286,9 @@ export default function OrdersPage() {
               <TableHeader>
                 <TableRow>
                   <TableHead>Order ID</TableHead>
-                  <TableHead>Customer</TableHead>
+                  <TableHead>Customer ID</TableHead>
                   <TableHead>Payment</TableHead>
-                  <TableHead>Fulfillment</TableHead>
+                  {/* <TableHead>Fulfillment</TableHead> */}
                   <TableHead className="text-center">Items</TableHead>
                   <TableHead className="text-right">Total</TableHead>
                   <TableHead className="text-right">Date</TableHead>
@@ -379,19 +311,20 @@ export default function OrdersPage() {
                       {/* Customer */}
                       <TableCell>
                         <div>
-                          <p className="font-medium">{order.customerName}</p>
+                          <p className="font-medium">{order.userId}</p>
                           <p className="text-muted-foreground text-xs">{order.customerEmail}</p>
                         </div>
                       </TableCell>
 
                       {/* Payment */}
-                      <TableCell>{getPaymentStatusBadge(order.paymentStatus)}</TableCell>
+                      <TableCell>{getPaymentStatusBadge(order.status)}</TableCell>
 
                       {/* Order Status */}
-                      <TableCell>{getOrderStatusBadge(order.orderStatus)}</TableCell>
+                      {/* <TableCell>{getOrderStatusBadge(order.orderStatus)}</TableCell> */}
 
                       {/* Items Count */}
                       <TableCell className="text-center font-medium">
+                        {/* {1200} */}
                         {order.items.reduce((acc, item) => acc + item.quantity, 0)}
                       </TableCell>
 
@@ -420,11 +353,11 @@ export default function OrdersPage() {
                               View Details & Invoice
                             </DropdownMenuItem>
                             <DropdownMenuSeparator />
-                            <DropdownMenuItem
-                              onClick={() => handleStatusChange(order.id, 'processing')}
+                            {/* <DropdownMenuItem
+                              onClick={() => handleStatusChange(order.id, 'processing'.toUpperCase())}
                             >
-                              Set as Processing
-                            </DropdownMenuItem>
+                              Set as Processing I
+                            </DropdownMenuItem> */}
                             <DropdownMenuItem
                               onClick={() => handleStatusChange(order.id, 'shipped')}
                             >

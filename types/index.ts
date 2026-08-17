@@ -172,3 +172,21 @@ export interface ProductFormData {
   imageUrl: string;
   categoryId: number;
 }
+
+export interface Order {
+  id: string;
+  userId: number;
+  totalAmount: number;
+  status: string;
+  createdAt: string;
+  items: OrderItem[];
+}
+
+export interface PaginatedOrderResponse {
+  content: Order[];
+  pageNumber: number;
+  pageSize: number;
+  totalElements: number;
+  totalPages: number;
+  last: boolean;
+}
