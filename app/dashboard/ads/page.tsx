@@ -81,6 +81,7 @@ export default function AdsPage() {
 
     if (response.ok) {
       const data = await response.json();
+      console.log(data);
       setAds(data);
     }
   }, []);
@@ -363,6 +364,8 @@ export default function AdsPage() {
                             src={ad.imageUrl}
                             alt={''}
                             className="h-12 w-24 rounded-md border object-cover"
+                            width={200}
+                            height={200}
                           />
                         </div>
                       </TableCell>
