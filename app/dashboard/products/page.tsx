@@ -458,6 +458,8 @@ export default function ProductsPage() {
                         <Image
                           src={product.imageUrl}
                           alt={product.name}
+                          width={400}
+                          height={400}
                           className="h-full w-full object-cover"
                           onError={(e) => {
                             e.currentTarget.style.display = 'none';

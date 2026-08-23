@@ -25,10 +25,20 @@ interface LoginFormData {
   password: string;
 }
 
-// Explicit Next.js Page Props
-interface PageProps extends React.ComponentProps<'div'> {}
+interface PageProps extends React.HTMLAttributes<HTMLDivElement> {
+  // Define searchParams/params so TypeScript knows about them, but destructure them out
+  params?: Promise<{ [key: string]: string | string[] }>;
+  searchParams?: Promise<{ [key: string]: string | string[] }>;
+}
 
-export default function Page({ className, ...props }: PageProps) {
+export default function Page({
+  className,
+  searchParams, // 👈 Destructure searchParams here so it isn't in ...props
+  params, // 👈 Destructure params here as well
+  ...props // 👈 Now ...props only contains valid HTML attributes
+}: PageProps) {
+  // If you need searchParams, await it here:
+  // const resolvedSearchParams = await searchParams;
   const { login, user } = useAuth();
   const router = useRouter();
   const [error, setError] = useState<string>('');
