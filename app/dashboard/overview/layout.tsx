@@ -24,9 +24,9 @@ export default function OverViewLayout({
   bar_stats: React.ReactNode;
   area_stats: React.ReactNode;
 }) {
-  const { isAuthenticated } = useAuth();
-  console.log('USER', isAuthenticated);
-  if (!isAuthenticated) redirect('/auth/sign-in');
+  const { user } = useAuth();
+  console.log('USER', user);
+  if (!user) redirect('/auth/sign-in');
   return (
     <PageContainer>
       <div className="flex flex-1 flex-col space-y-2">

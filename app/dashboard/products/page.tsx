@@ -368,6 +368,8 @@ export default function ProductsPage() {
                                 <Image
                                   src={product.imageUrl}
                                   alt={product.name}
+                                  width={200}
+                                  height={200}
                                   className="h-full w-full rounded-md object-cover"
                                   onError={(e) => {
                                     // Fallback if image fails to load (e.g. localhost URL)
