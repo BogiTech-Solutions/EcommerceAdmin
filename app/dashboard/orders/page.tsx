@@ -124,54 +124,81 @@ export default function OrdersPage() {
   ).length;
   const completedCount = orders.content.filter((o) => o.orderStatus === 'delivered').length;
 
-  // Status Badge Colors
+  // Status Badge Colors (Case-Insensitive & Standardized)
   const getOrderStatusBadge = (status: string) => {
-    switch (status) {
+    const normalizedStatus = status?.toLowerCase();
+
+    switch (normalizedStatus) {
       case 'delivered':
+      case 'completed':
         return (
-          <Badge className="border-emerald-200 bg-emerald-500/10 text-emerald-600 hover:bg-emerald-500/20">
+          <Badge className="border-emerald-500/20 bg-emerald-500/15 text-emerald-700 hover:bg-emerald-500/25 dark:bg-emerald-500/20 dark:text-emerald-400">
             Delivered
           </Badge>
         );
       case 'shipped':
         return (
-          <Badge className="border-blue-200 bg-blue-500/10 text-blue-600 hover:bg-blue-500/20">
+          <Badge className="border-blue-500/20 bg-blue-500/15 text-blue-700 hover:bg-blue-500/25 dark:bg-blue-500/20 dark:text-blue-400">
             Shipped
           </Badge>
         );
       case 'processing':
+      case 'in_fulfillment':
         return (
-          <Badge className="border-indigo-200 bg-indigo-500/10 text-indigo-600 hover:bg-indigo-500/20">
+          <Badge className="border-indigo-500/20 bg-indigo-500/15 text-indigo-700 hover:bg-indigo-500/25 dark:bg-indigo-500/20 dark:text-indigo-400">
             Processing
           </Badge>
         );
       case 'pending':
         return (
-          <Badge className="border-amber-200 bg-amber-500/10 text-amber-600 hover:bg-amber-500/20">
+          <Badge className="border-amber-500/20 bg-amber-500/15 text-amber-700 hover:bg-amber-500/25 dark:bg-amber-500/20 dark:text-amber-400">
             Pending
           </Badge>
         );
       case 'cancelled':
-        return <Badge variant="destructive">Cancelled</Badge>;
+      case 'canceled':
+        return (
+          <Badge className="border-rose-500/20 bg-rose-500/15 text-rose-700 hover:bg-rose-500/25 dark:bg-rose-500/20 dark:text-rose-400">
+            Cancelled
+          </Badge>
+        );
       default:
         return <Badge variant="outline">{status}</Badge>;
     }
   };
 
   const getPaymentStatusBadge = (status: string) => {
-    switch (status) {
+    const normalizedStatus = status?.toLowerCase();
+
+    switch (normalizedStatus) {
       case 'paid':
-        return <Badge variant="default">Paid</Badge>;
-      case 'pending':
+      case 'completed':
         return (
-          <Badge variant="outline" className="border-amber-300 text-amber-600">
+          <Badge className="border-emerald-500/20 bg-emerald-500/15 text-emerald-700 hover:bg-emerald-500/25 dark:bg-emerald-500/20 dark:text-emerald-400">
+            Paid
+          </Badge>
+        );
+      case 'pending':
+      case 'unpaid':
+        return (
+          <Badge className="border-amber-500/20 bg-amber-500/15 text-amber-700 hover:bg-amber-500/25 dark:bg-amber-500/20 dark:text-amber-400">
             Pending
           </Badge>
         );
       case 'refunded':
-        return <Badge variant="secondary">Refunded</Badge>;
+        return (
+          <Badge className="border-purple-500/20 bg-purple-500/15 text-purple-700 hover:bg-purple-500/25 dark:bg-purple-500/20 dark:text-purple-400">
+            Refunded
+          </Badge>
+        );
+      case 'failed':
+        return (
+          <Badge className="border-rose-500/20 bg-rose-500/15 text-rose-700 hover:bg-rose-500/25 dark:bg-rose-500/20 dark:text-rose-400">
+            Failed
+          </Badge>
+        );
       default:
-        return <Badge variant="destructive">{status}</Badge>;
+        return <Badge variant="outline">{status}</Badge>;
     }
   };
 
