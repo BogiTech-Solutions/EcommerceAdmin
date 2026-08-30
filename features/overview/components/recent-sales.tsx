@@ -22,20 +22,6 @@ const salesData = [
     avatar: 'https://api.slingacademy.com/public/sample-users/3.png',
     fallback: 'IN',
     amount: '+$299.00'
-  },
-  {
-    name: 'William Kim',
-    email: 'will@email.com',
-    avatar: 'https://api.slingacademy.com/public/sample-users/4.png',
-    fallback: 'WK',
-    amount: '+$99.00'
-  },
-  {
-    name: 'Sofia Davis',
-    email: 'sofia.davis@email.com',
-    avatar: 'https://api.slingacademy.com/public/sample-users/5.png',
-    fallback: 'SD',
-    amount: '+$39.00'
   }
 ];
 
