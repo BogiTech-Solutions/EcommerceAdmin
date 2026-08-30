@@ -17,9 +17,8 @@ import {
 import { Skeleton } from '@/components/ui/skeleton';
 import { API_BASE_URL } from '@/constants';
 import { useAuth } from '@/context/authContext';
+import { BarGraph } from '@/features/overview/components/bar-graph';
 import { RecentSales } from '@/features/overview/components/recent-sales';
-
-import BarStats from '@/components/overview/@bar_stats/page';
 
 export default function OverViewLayout() {
   // Destructure isLoading/loading from your AuthContext
@@ -138,7 +137,7 @@ export default function OverViewLayout() {
 
         {/* Analytics Charts Section */}
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-7">
-          <div className="col-span-4">{isLoading ? <ChartSkeleton /> : <BarStats />}</div>
+          <div className="col-span-4">{isLoading ? <ChartSkeleton /> : <BarGraph />}</div>
           <div className="col-span-4 md:col-span-3">
             {isLoading ? <ChartSkeleton /> : <RecentSales />}
           </div>
