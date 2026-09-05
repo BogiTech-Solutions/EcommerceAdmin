@@ -172,6 +172,8 @@ export function SingleFileUploader({
             {isImage && previewUrl ? (
               <div className="bg-muted h-12 w-12 shrink-0 overflow-hidden rounded-lg border">
                 <Image
+                  width={200}
+                  height={200}
                   src={previewUrl}
                   alt={getFileName()}
                   className="h-full w-full object-cover"

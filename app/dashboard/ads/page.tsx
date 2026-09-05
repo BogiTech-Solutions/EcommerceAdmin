@@ -166,8 +166,11 @@ export default function AdsPage() {
           },
           body: formData
         });
-        console.log(response);
-        if (response.ok) toast.success('Ad campaign created successfully');
+
+        if (response.ok) {
+          fetchAds();
+          toast.success('Ad campaign created successfully');
+        }
       }
       setIsModalOpen(false);
     } catch (error) {
