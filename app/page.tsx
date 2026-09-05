@@ -5,5 +5,5 @@ import { useAuth } from '@/context/authContext';
 
 export default function Dashboard() {
   const { isAuthenticated } = useAuth();
-  isAuthenticated ? redirect('/dashboard/overview') : redirect('/auth/sign-in');
+  isAuthenticated ? redirect('/dashboard') : redirect('/auth/sign-in');
 }
