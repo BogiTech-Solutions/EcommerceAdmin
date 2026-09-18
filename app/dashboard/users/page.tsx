@@ -67,6 +67,17 @@ export default function UsersPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingUser, setEditingUser] = useState<any | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [userAnalytics, setUserAnalytics] = useState<{
+    activeUsers: number;
+    adminUsers: number;
+    suspendedUsers: number;
+    totalUsers: number;
+  }>({
+    activeUsers: 0,
+    adminUsers: 0,
+    suspendedUsers: 0,
+    totalUsers: 0
+  });
 
   const getUsers = useCallback(async () => {
     const token = localStorage.getItem('token') || '';
@@ -79,6 +90,20 @@ export default function UsersPage() {
     if (response.ok) {
       const data: PaginatedUsersResponse = await response.json();
       setUsers(data.content);
+    }
+  }, []);
+
+  const fetchUserAnalysis = useCallback(async () => {
+    const token = localStorage.getItem('token');
+    const response = await fetch(API_BASE_URL + '/analytics/users', {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      setUserAnalytics(data);
     }
   }, []);
 
@@ -175,7 +200,8 @@ export default function UsersPage() {
   };
   useEffect(() => {
     getUsers();
-  }, [getUsers]);
+    fetchUserAnalysis();
+  }, [getUsers, fetchUserAnalysis]);
   return (
     <div className="flex-1 space-y-6 p-6 md:p-8">
       {/* Header */}
@@ -202,7 +228,7 @@ export default function UsersPage() {
             <IconUsers className="text-muted-foreground h-4 w-4" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{users.length}</div>
+            <div className="text-2xl font-bold">{userAnalytics.totalUsers}</div>
             <p className="text-muted-foreground text-xs">+12% from last month</p>
           </CardContent>
         </Card>
@@ -213,9 +239,7 @@ export default function UsersPage() {
             <IconUserCheck className="h-4 w-4 text-emerald-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">
-              {users.filter((u) => u.status === 'Active').length}
-            </div>
+            <div className="text-2xl font-bold">{userAnalytics.activeUsers}</div>
             <p className="text-muted-foreground text-xs">92% active engagement rate</p>
           </CardContent>
         </Card>
@@ -226,9 +250,7 @@ export default function UsersPage() {
             <IconShieldCheck className="h-4 w-4 text-indigo-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">
-              {users.filter((u) => u.role === 'Admin' || u.role === 'Vendor').length}
-            </div>
+            <div className="text-2xl font-bold">{userAnalytics.adminUsers}</div>
             <p className="text-muted-foreground text-xs">Elevated permissions</p>
           </CardContent>
         </Card>
@@ -239,9 +261,7 @@ export default function UsersPage() {
             <IconUserX className="text-destructive h-4 w-4" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">
-              {users.filter((u) => u.status === 'Suspended').length}
-            </div>
+            <div className="text-2xl font-bold">{userAnalytics.suspendedUsers}</div>
             <p className="text-muted-foreground text-xs">Flagged or disabled</p>
           </CardContent>
         </Card>
