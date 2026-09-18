@@ -3,7 +3,6 @@
 import {
   IconSearch,
   IconEye,
-  IconTruckDelivery,
   IconClock,
   IconCircleCheck,
   IconCurrencyDollar,
@@ -13,6 +12,7 @@ import {
   IconCreditCard,
   IconLoader2
 } from '@tabler/icons-react';
+import { X } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
 
@@ -61,6 +61,17 @@ export default function OrdersPage() {
   const [activeTab, setActiveTab] = useState('all');
   const [selectedOrder, setSelectedOrder] = useState<any | null>(null);
   const [updatingOrderId, setUpdatingOrderId] = useState<string | number | null>(null);
+  const [orderAnalytics, setOrderAnalytics] = useState<{
+    totalCanceledOrders: number;
+    totalCompletedOrders: number;
+    totalOrders: number;
+    totalPendingOrders: number;
+  }>({
+    totalCanceledOrders: 0,
+    totalCompletedOrders: 0,
+    totalOrders: 0,
+    totalPendingOrders: 0
+  });
 
   // In-place status update handler with loading state tracking
   const handleStatusChange = async (orderId: string | number, newStatus: string) => {
@@ -102,6 +113,20 @@ export default function OrdersPage() {
     if (response.ok) {
       const data = await response.json();
       setOrders(data);
+    }
+  }, []);
+
+  const fetchOrderAnalysis = useCallback(async () => {
+    const token = localStorage.getItem('token');
+    const response = await fetch(API_BASE_URL + '/analytics/orders', {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      setOrderAnalytics(data);
     }
   }, []);
 
@@ -208,7 +233,8 @@ export default function OrdersPage() {
 
   useEffect(() => {
     fetchOrders();
-  }, [fetchOrders]);
+    fetchOrderAnalysis();
+  }, [fetchOrders, fetchOrderAnalysis]);
   return (
     <>
       {/* Header */}
@@ -233,36 +259,34 @@ export default function OrdersPage() {
       <div className="grid gap-4 md:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Paid Revenue</CardTitle>
+            <CardTitle className="text-sm font-medium">Total Orders</CardTitle>
             <IconCurrencyDollar className="h-4 w-4 text-emerald-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">
-              ${totalRevenue.toLocaleString('en-US', { minimumFractionDigits: 2 })}
-            </div>
+            <div className="text-2xl font-bold">${orderAnalytics.totalOrders}</div>
             <p className="text-muted-foreground text-xs">+18.2% from last month</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Pending Action</CardTitle>
+            <CardTitle className="text-sm font-medium">Pending Orders</CardTitle>
             <IconClock className="h-4 w-4 text-amber-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{pendingCount}</div>
+            <div className="text-2xl font-bold">{orderAnalytics.totalPendingOrders}</div>
             <p className="text-muted-foreground text-xs">Requires immediate review</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">In Fulfillment</CardTitle>
-            <IconTruckDelivery className="h-4 w-4 text-indigo-500" />
+            <CardTitle className="text-sm font-medium">Canceled Orders</CardTitle>
+            <X className="h-4 w-4 text-red-400" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{processingCount}</div>
-            <p className="text-muted-foreground text-xs">Processing or shipped out</p>
+            <div className="text-2xl font-bold">{orderAnalytics.totalCompletedOrders}</div>
+            <p className="text-muted-foreground text-xs">Order termiated</p>
           </CardContent>
         </Card>
 
@@ -272,7 +296,7 @@ export default function OrdersPage() {
             <IconCircleCheck className="h-4 w-4 text-emerald-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{completedCount}</div>
+            <div className="text-2xl font-bold">{orderAnalytics.totalCompletedOrders}</div>
             <p className="text-muted-foreground text-xs">Successfully delivered</p>
           </CardContent>
         </Card>
