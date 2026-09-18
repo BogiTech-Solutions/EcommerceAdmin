@@ -79,9 +79,9 @@ export default function UsersPage() {
     totalUsers: 0
   });
 
-  const getUsers = useCallback(async () => {
+  const getUsers = useCallback(async (page = 0, size = 10) => {
     const token = localStorage.getItem('token') || '';
-    const response = await fetch(API_BASE_URL + '/users?page=0&size=10&sort=id%2CASC', {
+    const response = await fetch(API_BASE_URL + `/users?page=${page}&size=${size}&sort=id%2CASC`, {
       headers: {
         Authorization: 'Bearer ' + token
       }
@@ -199,7 +199,7 @@ export default function UsersPage() {
       .slice(0, 2);
   };
   useEffect(() => {
-    getUsers();
+    getUsers(0, 10);
     fetchUserAnalysis();
   }, [getUsers, fetchUserAnalysis]);
   return (
